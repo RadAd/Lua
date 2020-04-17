@@ -1,6 +1,8 @@
 setlocal
 prompt $G$S
 
+rem call vcmake x86 release build x64 build
+
 call :pack Win32 || exit /b 1
 call :pack x64 || exit /b 1
 goto :eof
