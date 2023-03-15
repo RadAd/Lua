@@ -154,7 +154,7 @@ static int l_EndPaint(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
-static BOOL EnumWindowsProc(HWND hWnd, LPARAM lParam)
+static BOOL WINAPI EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
     lua_State* L = (lua_State*) lParam;
     rlua_pushHWND(L, hWnd);
