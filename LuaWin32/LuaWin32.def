@@ -1,0 +1,4 @@
+LIBRARY lrwin32.dll
+VERSION 1.0
+EXPORTS
+luaopen_lrwin32

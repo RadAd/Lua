@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="cpp.hint" />
+    <None Include="LuaWin32.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LuaWin32.c" />
+    <ClCompile Include="LuaUtils.c" />
+    <ClCompile Include="LuaUser32.c" />
+    <ClCompile Include="LuaKernel32.c" />
+    <ClCompile Include="LuaGdi32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LuaWin32Types.h" />
+    <ClInclude Include="LuaUtils.h" />
+  </ItemGroup>
+</Project>
