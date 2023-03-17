@@ -210,10 +210,37 @@ static const struct lua_RegInt get_window_long_types[] = {
   { "WNDPROC",     GWLP_WNDPROC    },
   { "HINSTANCE",   GWLP_HINSTANCE  },
   { "HWNDPARENT",  GWLP_HWNDPARENT },
-  { "STYLE",        GWL_STYLE       },
-  { "EXSTYLE",      GWL_EXSTYLE     },
+  { "STYLE",       GWL_STYLE       },
+  { "EXSTYLE",     GWL_EXSTYLE     },
   { "USERDATA",    GWLP_USERDATA   },
   { "ID",          GWLP_ID         },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt file_attribute[] = {
+  { "READONLY",                 FILE_ATTRIBUTE_READONLY },
+  { "HIDDEN",                   FILE_ATTRIBUTE_HIDDEN },
+  { "SYSTEM",                   FILE_ATTRIBUTE_SYSTEM },
+  { "DIRECTORY",                FILE_ATTRIBUTE_DIRECTORY },
+  { "ARCHIVE",                  FILE_ATTRIBUTE_ARCHIVE },
+  { "DEVICE",                   FILE_ATTRIBUTE_DEVICE },
+  { "NORMAL",                   FILE_ATTRIBUTE_NORMAL },
+  { "TEMPORARY",                FILE_ATTRIBUTE_TEMPORARY },
+  { "SPARSE_FILE",              FILE_ATTRIBUTE_SPARSE_FILE },
+  { "REPARSE_POINT",            FILE_ATTRIBUTE_REPARSE_POINT },
+  { "COMPRESSED",               FILE_ATTRIBUTE_COMPRESSED },
+  { "OFFLINE",                  FILE_ATTRIBUTE_OFFLINE },
+  { "NOT_CONTENT_INDEXED",      FILE_ATTRIBUTE_NOT_CONTENT_INDEXED },
+  { "ENCRYPTED",                FILE_ATTRIBUTE_ENCRYPTED },
+  { "INTEGRITY_STREAM",         FILE_ATTRIBUTE_INTEGRITY_STREAM },
+  { "VIRTUAL",                  FILE_ATTRIBUTE_VIRTUAL },
+  { "NO_SCRUB_DATA",            FILE_ATTRIBUTE_NO_SCRUB_DATA },
+  { "EA",                       FILE_ATTRIBUTE_EA },
+  { "PINNED",                   FILE_ATTRIBUTE_PINNED },
+  { "UNPINNED",                 FILE_ATTRIBUTE_UNPINNED },
+  { "RECALL_ON_OPEN",           FILE_ATTRIBUTE_RECALL_ON_OPEN },
+  { "RECALL_ON_DATA_ACCESS",    FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS },
 
   { NULL, 0 },
 };
@@ -239,5 +266,6 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, message_box, "MB");
     rlua_newtableinteger(L, color_index, "color_index");
     rlua_newtableinteger(L, get_window_long_types, "GWLP");
+    rlua_newtableinteger(L, file_attribute, "FILE_ATTRIBUTE");
     return 1;
 }

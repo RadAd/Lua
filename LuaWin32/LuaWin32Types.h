@@ -42,6 +42,7 @@ REGISTER_CHECK_INTEGER(WPARAM)
 REGISTER_CHECK_INTEGER(LPARAM)
 REGISTER_CHECK_INTEGER(LRESULT)
 REGISTER_CHECK_INTEGER(ATOM)
+REGISTER_CHECK_INTEGER(HANDLE)
 REGISTER_CHECK_INTEGER(HWND)
 REGISTER_CHECK_INTEGER(HDC)
 REGISTER_CHECK_INTEGER(HICON)
@@ -53,6 +54,10 @@ REGISTER_CHECK_INTEGER(HCURSOR)
 inline const char* rlua_checkstring(lua_State* L, int idx)
 {
     return luaL_checkstring(L, idx);
+}
+inline const char* rlua_checkstringornil(lua_State* L, int idx)
+{
+    return lua_isnil(L, idx) ? NULL : luaL_checkstring(L, idx);
 }
 inline const char* rlua_optstring(lua_State* L, int idx, const char* def)
 {
@@ -186,6 +191,24 @@ static void rlua_toPOINT(lua_State* L, int idx, POINT* pt)
 
 REGISTER_CHECK_STRUCT(POINT)
 
+// FILETIME
+
+inline void rlua_fromFILETIME(lua_State* L, int idx, const FILETIME ft)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    rlua_setfieldLONG(L, idx, "dwLowDateTime", ft.dwLowDateTime);
+    rlua_setfieldLONG(L, idx, "dwHighDateTime", ft.dwHighDateTime);
+}
+
+static void rlua_toFILETIME(lua_State* L, int idx, FILETIME* ft)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    ft->dwLowDateTime = rlua_getfieldLONG(L, idx, "dwLowDateTime");
+    ft->dwHighDateTime = rlua_getfieldLONG(L, idx, "dwHighDateTime");
+}
+
+REGISTER_CHECK_STRUCT(FILETIME)
+
 // MSG
 
 inline void rlua_fromMSG(lua_State* L, int idx, const MSG* m)
@@ -208,4 +231,21 @@ inline void rlua_toMSG(lua_State* L, int idx, MSG* m)
     m->lParam = rlua_getfieldLPARAM(L, idx, "lParam");
     m->time = rlua_getfieldDWORD(L, idx, "time");
     m->pt = rlua_getfieldPOINT(L, idx, "pt");
+}
+
+// WIN32_FIND_DATA
+
+inline void rlua_fromWIN32_FIND_DATA(lua_State* L, int idx, const WIN32_FIND_DATAA* FindFileData)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    rlua_setfieldDWORD(L, idx, "dwFileAttributes", FindFileData->dwFileAttributes);
+    rlua_setfieldFILETIME(L, idx, "ftCreationTime", FindFileData->ftCreationTime);
+    rlua_setfieldFILETIME(L, idx, "ftLastAccessTime", FindFileData->ftLastAccessTime);
+    rlua_setfieldFILETIME(L, idx, "ftCreationTime", FindFileData->ftLastWriteTime);
+    rlua_setfieldDWORD(L, idx, "nFileSizeHigh", FindFileData->nFileSizeHigh);
+    rlua_setfieldDWORD(L, idx, "nFileSizeLow", FindFileData->nFileSizeLow);
+    rlua_setfieldDWORD(L, idx, "dwReserved0", FindFileData->dwReserved0);
+    rlua_setfieldDWORD(L, idx, "dwReserved1", FindFileData->dwReserved1);
+    rlua_setfieldstring(L, idx, "cFileName", FindFileData->cFileName);
+    rlua_setfieldstring(L, idx, "cAlternateFileName", FindFileData->cAlternateFileName);
 }
