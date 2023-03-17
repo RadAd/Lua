@@ -1,7 +1,7 @@
-#include "lua.h"
-
+#include <lua.h>
 #include <Windows.h>
 
+#include "Buffer.h"
 #include "LuaUtils.h"
 #include "LuaWin32Types.h"
 
@@ -188,12 +188,20 @@ static int l_GetClassName(lua_State* L)
     int arg = 0;
     HWND hWnd = rlua_checkHWND(L, ++arg);
 
-    char buffer[1024];
-    if (GetClassNameA(hWnd, buffer, ARRAYSIZE(buffer)))
-        lua_pushstring(L, buffer);
-    else
+    static CharBuffer cb;
+    if (cb.size == 0)
+        cb = CharBufferCreate();
+
+    int len;
+    while ((DWORD) (len = GetClassNameA(hWnd, cb.str, cb.size)) == (cb.size - 1))
+        CharBufferIncreaseSize(L, &cb, cb.size + 1);
+
+    const int rt = lua_gettop(L);
+    if (len == 0 && GetLastError() != ERROR_SUCCESS)
         lua_pushnil(L);
-    return 1;
+    else
+        lua_pushstring(L, cb.str);
+    return lua_gettop(L) - rt;
 }
 
 static int l_GetForegroundWindow(lua_State* L)
@@ -245,12 +253,30 @@ static int l_GetWindowText(lua_State* L)
     int arg = 0;
     HWND hWnd = rlua_checkHWND(L, ++arg);
 
-    char buffer[1024];
-    int len = GetWindowTextA(hWnd, buffer, ARRAYSIZE(buffer));
-    // TODO check GetLastError ?
+    const int lenb = GetWindowTextLengthA(hWnd);
+    if (lenb == 0)
+    {
+        const int rt = lua_gettop(L);
+        if (GetLastError() != ERROR_SUCCESS)
+            lua_pushnil(L);
+        else
+            lua_pushstring(L, "");
+        return lua_gettop(L) - rt;
+    }
+
+    static CharBuffer cb;
+    if (cb.size == 0)
+        cb = CharBufferCreate();
+
+    CharBufferIncreaseSize(L, &cb, lenb + 1);
+
+    const int len = GetWindowTextA(hWnd, cb.str, cb.size);
 
     const int rt = lua_gettop(L);
-    lua_pushstring(L, buffer);
+    if (len == 0 && GetLastError() != ERROR_SUCCESS)
+        lua_pushnil(L);
+    else
+        lua_pushstring(L, cb.str);
     return lua_gettop(L) - rt;
 }
 

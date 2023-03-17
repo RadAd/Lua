@@ -10,9 +10,11 @@
     <ClCompile Include="LuaUser32.c" />
     <ClCompile Include="LuaKernel32.c" />
     <ClCompile Include="LuaGdi32.c" />
+    <ClCompile Include="Buffer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LuaWin32Types.h" />
     <ClInclude Include="LuaUtils.h" />
+    <ClInclude Include="Buffer.h" />
   </ItemGroup>
 </Project>

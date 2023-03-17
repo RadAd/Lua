@@ -171,6 +171,7 @@
     <None Include="LuaWin32.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.c" />
     <ClCompile Include="LuaGdi32.c" />
     <ClCompile Include="LuaKernel32.c" />
     <ClCompile Include="LuaUser32.c" />
@@ -183,6 +184,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="LuaUtils.h" />
     <ClInclude Include="LuaWin32Types.h" />
   </ItemGroup>
