@@ -28,7 +28,7 @@ static int l_ExpandEnvironmentStrings(lua_State* L)
         cb = CharBufferCreate();
 
     DWORD len;
-    while ((len = ExpandEnvironmentStringsA(lpName, cb.str, cb.size)) >= cb.size)
+    while ((len = ExpandEnvironmentStrings(lpName, cb.str, cb.size)) >= cb.size)
         CharBufferIncreaseSize(L, &cb, len + 1);
 
     const int rt = lua_gettop(L);
@@ -59,9 +59,9 @@ static int l_FindFirstFile(lua_State* L)
 
     WIN32_FIND_DATAA FindFileData;
     ZeroMemory(&FindFileData, sizeof(FindFileData));
-    HANDLE h = FindFirstFileA(lpFileName, &FindFileData);
+    HANDLE h = FindFirstFile(lpFileName, &FindFileData);
 
-    rlua_fromWIN32_FIND_DATA(L, FindFileDataidx, &FindFileData);
+    rlua_fromWIN32_FIND_DAT(L, FindFileDataidx, &FindFileData);
 
     const int rt = lua_gettop(L);
     rlua_pushHANDLE(L, h);
@@ -76,9 +76,9 @@ static int l_FindNextFile(lua_State* L)
 
     WIN32_FIND_DATAA FindFileData;
     ZeroMemory(&FindFileData, sizeof(FindFileData));
-    BOOL ret = FindNextFileA(h, &FindFileData);
+    BOOL ret = FindNextFile(h, &FindFileData);
 
-    rlua_fromWIN32_FIND_DATA(L, -1, &FindFileData);
+    rlua_fromWIN32_FIND_DAT(L, -1, &FindFileData);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, ret);
@@ -93,7 +93,6 @@ static int l_GetEnvironmentStrings(lua_State* L)
 
     lua_createtable(L, 0, 100);
 
-#undef GetEnvironmentStrings
     LPCH env = GetEnvironmentStrings();
     LPCCH e = env;
     while (*e != '\0')
@@ -108,7 +107,7 @@ static int l_GetEnvironmentStrings(lua_State* L)
 
         e += strlen(e) + 1;
     }
-    FreeEnvironmentStringsA(env);
+    FreeEnvironmentStrings(env);
 
     return lua_gettop(L) - rt;
 }
@@ -123,7 +122,7 @@ static int l_GetEnvironmentVariable(lua_State* L)
         cb = CharBufferCreate();
 
     DWORD len;
-    while ((len = GetEnvironmentVariableA(lpName, cb.str, cb.size)) >= cb.size)
+    while ((len = GetEnvironmentVariable(lpName, cb.str, cb.size)) >= cb.size)
         CharBufferIncreaseSize(L, &cb, len + 1);
 
     const int rt = lua_gettop(L);
@@ -141,7 +140,7 @@ static int l_GetCurrentDirectory(lua_State* L)
         cb = CharBufferCreate();
 
     DWORD len;
-    while ((len = GetCurrentDirectoryA(cb.size, cb.str)) >= cb.size)
+    while ((len = GetCurrentDirectory(cb.size, cb.str)) >= cb.size)
         CharBufferIncreaseSize(L, &cb, len + 1);
 
     const int rt = lua_gettop(L);
@@ -166,7 +165,7 @@ static int l_OutputDebugString(lua_State* L)
     int arg = 0;
     const char* lpOutputString = rlua_checkstring(L, ++arg);
 
-    OutputDebugStringA(lpOutputString);
+    OutputDebugString(lpOutputString);
 
     return 0;
 }
@@ -177,7 +176,7 @@ static int l_SetEnvironmentVariable(lua_State* L)
     const char* lpName = rlua_checkstring(L, ++arg);
     const char* lpValue = rlua_checkstringornil(L, ++arg);
 
-    const BOOL ret = SetEnvironmentVariableA(lpName, lpValue);
+    const BOOL ret = SetEnvironmentVariable(lpName, lpValue);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, ret);

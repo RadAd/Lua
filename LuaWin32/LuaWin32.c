@@ -251,7 +251,7 @@ extern const struct luaL_Reg gdi32lib[];
 
 WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
 {
-    g_hInstance = GetModuleHandleA(NULL); // TODO Capture this DLLs instance handle
+    g_hInstance = GetModuleHandle(NULL); // TODO Capture this DLLs instance handle
 
     luaL_checkversion(L),
     lua_createtable(L, 0, 100);

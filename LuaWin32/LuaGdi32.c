@@ -14,7 +14,7 @@ static int l_TextOut(lua_State* L)
     const char* str = luaL_checkstring(L, ++arg);
     int c = rlua_optint(L, ++arg, (int) strlen(str));
 
-    BOOL r = TextOutA(hdc, x, y, str, c);
+    BOOL r = TextOut(hdc, x, y, str, c);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, r);

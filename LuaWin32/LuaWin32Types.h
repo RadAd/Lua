@@ -235,7 +235,7 @@ inline void rlua_toMSG(lua_State* L, int idx, MSG* m)
 
 // WIN32_FIND_DATA
 
-inline void rlua_fromWIN32_FIND_DATA(lua_State* L, int idx, const WIN32_FIND_DATAA* FindFileData)
+inline void rlua_fromWIN32_FIND_DAT(lua_State* L, int idx, const WIN32_FIND_DATA* FindFileData)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
     rlua_setfieldDWORD(L, idx, "dwFileAttributes", FindFileData->dwFileAttributes);

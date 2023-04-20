@@ -29,7 +29,7 @@ inline WndProcSet* find_wnd_proc_set(ATOM class_atom)
 
 static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    const ATOM class_atom = (ATOM) GetClassLongPtrA(hwnd, GCW_ATOM);
+    const ATOM class_atom = (ATOM) GetClassLongPtr(hwnd, GCW_ATOM);
     const WndProcSet* pwnd_proc_set = find_wnd_proc_set(class_atom);
 
     lua_State* L = g_L;
@@ -80,7 +80,7 @@ static int l_CreateWindowEx(lua_State* L)
     int w = rlua_getfieldoptint(L, o, "w", CW_USEDEFAULT);
     int h = rlua_getfieldoptint(L, o, "h", CW_USEDEFAULT);
 
-    HWND hwnd = CreateWindowExA(
+    HWND hwnd = CreateWindowEx(
         exstyle,
         lpszClassName,
         lpszWindowName,
@@ -106,7 +106,7 @@ static int l_DefWindowProc(lua_State* L)
     WPARAM wParam = rlua_checkWPARAM(L, ++arg);
     LPARAM lParam = rlua_checkLPARAM(L, ++arg);
 
-    LRESULT r = DefWindowProcA(hwnd, uMsg, wParam, lParam);
+    LRESULT r = DefWindowProc(hwnd, uMsg, wParam, lParam);
 
     const int rt = lua_gettop(L);
     lua_pushinteger(L, r);
@@ -123,7 +123,7 @@ static int l_DispatchMessage(lua_State* L)
     const int idxMSG = ++arg;
     rlua_toMSG(L, idxMSG, &msg);
 
-    LRESULT r = DispatchMessageA(&msg);
+    LRESULT r = DispatchMessage(&msg);
 
     //rlua_fromMSG(L, idxMSG, &msg);
 
@@ -193,7 +193,7 @@ static int l_GetClassName(lua_State* L)
         cb = CharBufferCreate();
 
     int len;
-    while ((DWORD) (len = GetClassNameA(hWnd, cb.str, cb.size)) == (cb.size - 1))
+    while ((DWORD) (len = GetClassName(hWnd, cb.str, cb.size)) == (cb.size - 1))
         CharBufferIncreaseSize(L, &cb, cb.size + 1);
 
     const int rt = lua_gettop(L);
@@ -226,7 +226,7 @@ static int l_GetMessage(lua_State* L)
 
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
-    BOOL r = GetMessageA(&msg, hwnd, wMsgFilterMin, wMsgFilterMax);
+    BOOL r = GetMessage(&msg, hwnd, wMsgFilterMin, wMsgFilterMax);
     rlua_fromMSG(L, msgidx, &msg);
 
     g_L = NULL;
@@ -253,7 +253,7 @@ static int l_GetWindowText(lua_State* L)
     int arg = 0;
     HWND hWnd = rlua_checkHWND(L, ++arg);
 
-    const int lenb = GetWindowTextLengthA(hWnd);
+    const int lenb = GetWindowTextLength(hWnd);
     if (lenb == 0)
     {
         const int rt = lua_gettop(L);
@@ -270,7 +270,7 @@ static int l_GetWindowText(lua_State* L)
 
     CharBufferIncreaseSize(L, &cb, lenb + 1);
 
-    const int len = GetWindowTextA(hWnd, cb.str, cb.size);
+    const int len = GetWindowText(hWnd, cb.str, cb.size);
 
     const int rt = lua_gettop(L);
     if (len == 0 && GetLastError() != ERROR_SUCCESS)
@@ -288,7 +288,7 @@ static int l_MessageBox(lua_State* L)
     const char* lpCaption = rlua_checkstring(L, ++arg);
     UINT uType = rlua_checkUINT(L, ++arg);
 
-    int r = MessageBoxA(hwnd, lpText, lpCaption, uType);
+    int r = MessageBox(hwnd, lpText, lpCaption, uType);
 
     const int rt = lua_gettop(L);
     rlua_pushint(L, r);
@@ -326,7 +326,7 @@ static int l_RegisterClass(lua_State* L)
     wndclass.hbrBackground = rlua_getfieldoptHBRUSH(L, wndclassidx, "hbrBackground", NULL);
     //LPCWSTR     lpszMenuName;
     wndclass.lpszClassName = rlua_getfieldstring(L, wndclassidx, "lpszClassName");
-    ATOM class_atom = RegisterClassA(&wndclass);
+    ATOM class_atom = RegisterClass(&wndclass);
 
     WndProcSet* pwnd_proc_set = find_wnd_proc_set(0);
     pwnd_proc_set->class = class_atom;
