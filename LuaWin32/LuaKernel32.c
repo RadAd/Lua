@@ -1,5 +1,18 @@
 #include <lua.h>
 #include <Windows.h>
+//#include <string.h>
+
+static char* strndup(const char* str, int chars)
+{
+    char* buffer = (char*) malloc(chars + 1);
+    if (buffer)
+    {
+        strncpy_s(buffer, chars + 1, str, chars);
+        buffer[chars] = 0;
+    }
+
+    return buffer;
+}
 
 #include "Buffer.h"
 #include "LuaUtils.h"
@@ -69,6 +82,34 @@ static int l_FindNextFile(lua_State* L)
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, ret);
+    return lua_gettop(L) - rt;
+}
+
+static int l_GetEnvironmentStrings(lua_State* L)
+{
+    int arg = 0;
+
+    const int rt = lua_gettop(L);
+
+    lua_createtable(L, 0, 100);
+
+#undef GetEnvironmentStrings
+    LPCH env = GetEnvironmentStrings();
+    LPCCH e = env;
+    while (*e != '\0')
+    {
+        const char* eq = strchr(e, L'=');
+        if (eq != e)
+        {
+            lua_pushlstring(L, e, eq - e);
+            lua_pushstring(L, eq + 1);
+            lua_settable(L, -3);
+        }
+
+        e += strlen(e) + 1;
+    }
+    FreeEnvironmentStringsA(env);
+
     return lua_gettop(L) - rt;
 }
 
@@ -148,6 +189,7 @@ extern const struct luaL_Reg kernel32lib[] = {
   { "FindClose", l_FindClose },
   { "FindFirstFile", l_FindFirstFile },
   { "FindNextFile", l_FindNextFile },
+  { "GetEnvironmentStrings", l_GetEnvironmentStrings },
   { "GetEnvironmentVariable", l_GetEnvironmentVariable },
   { "GetCurrentDirectory", l_GetCurrentDirectory},
   { "GetLastError", l_GetLastError },
