@@ -5,10 +5,10 @@
 #include <lua.h>
 #include <lauxlib.h>
 
-CharBuffer CharBufferCreate()
+CharBuffer CharBufferCreateSize(DWORD size)
 {
     CharBuffer cb;
-    cb.size = 1024;
+    cb.size = size;
     cb.str = malloc(cb.size * sizeof(char));
     return cb;
 }

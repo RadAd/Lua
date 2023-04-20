@@ -9,6 +9,7 @@ typedef struct CharBuffer
     char* str;
 } CharBuffer;
 
-CharBuffer CharBufferCreate();
+CharBuffer CharBufferCreateSize(DWORD size);
+inline CharBuffer CharBufferCreate() { return CharBufferCreateSize(1024); }
 void CharBufferDelete(CharBuffer* pcb);
 void CharBufferIncreaseSize(lua_State* L, CharBuffer* pcb, DWORD size);

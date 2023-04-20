@@ -85,6 +85,49 @@ static int l_FindNextFile(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_GetConsoleAliases(lua_State* L)
+{
+    int arg = 0;
+    const char* lpExeName = rlua_checkstring(L, ++arg);
+
+    const int rt = lua_gettop(L);
+
+    static CharBuffer cb;
+    if (cb.size == 0)
+        cb = CharBufferCreateSize(GetConsoleAliasesLength((char*) lpExeName) / sizeof(TCHAR));
+
+    if (!GetConsoleAliases(cb.str, cb.size, (char*) lpExeName))
+        lua_pushnil(L);
+    else
+    {
+        lua_createtable(L, 0, 100);
+        for (const char* a = cb.str; a - cb.str < cb.size; a += strlen(a) + 1)
+        {
+            const char* eq = strchr(a, L'=');
+            if (eq != a)
+            {
+                lua_pushlstring(L, a, eq - a);
+                lua_pushstring(L, eq + 1);
+                lua_settable(L, -3);
+            }
+        }
+    }
+
+    return lua_gettop(L) - rt;
+}
+
+static int l_GetConsoleAliasesLength(lua_State* L)
+{
+    int arg = 0;
+    const char* lpExeName = rlua_checkstring(L, ++arg);
+
+    const int rt = lua_gettop(L);
+
+    lua_pushinteger(L, GetConsoleAliasesLength((char*) lpExeName));
+
+    return lua_gettop(L) - rt;
+}
+
 static int l_GetEnvironmentStrings(lua_State* L)
 {
     int arg = 0;
@@ -95,7 +138,7 @@ static int l_GetEnvironmentStrings(lua_State* L)
 
     LPCH env = GetEnvironmentStrings();
     LPCCH e = env;
-    while (*e != '\0')
+    for (LPCCH e = env; *e != '\0'; e += strlen(e) + 1)
     {
         const char* eq = strchr(e, L'=');
         if (eq != e)
@@ -104,8 +147,6 @@ static int l_GetEnvironmentStrings(lua_State* L)
             lua_pushstring(L, eq + 1);
             lua_settable(L, -3);
         }
-
-        e += strlen(e) + 1;
     }
     FreeEnvironmentStrings(env);
 
@@ -188,6 +229,8 @@ extern const struct luaL_Reg kernel32lib[] = {
   { "FindClose", l_FindClose },
   { "FindFirstFile", l_FindFirstFile },
   { "FindNextFile", l_FindNextFile },
+  { "GetConsoleAliases", l_GetConsoleAliases },
+  { "GetConsoleAliasesLength", l_GetConsoleAliasesLength },
   { "GetEnvironmentStrings", l_GetEnvironmentStrings },
   { "GetEnvironmentVariable", l_GetEnvironmentVariable },
   { "GetCurrentDirectory", l_GetCurrentDirectory},
