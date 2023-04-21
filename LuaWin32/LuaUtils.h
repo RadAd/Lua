@@ -25,7 +25,7 @@ inline void lua_appendarray(lua_State* L, int idx)
 
 typedef struct lua_RegInt {
     const char* name;
-    int value;
+    lua_Integer value;
 } lua_RegInt;
 
 inline void rlua_newtableinteger(lua_State* L, const lua_RegInt* v, const char* name)
@@ -33,7 +33,7 @@ inline void rlua_newtableinteger(lua_State* L, const lua_RegInt* v, const char* 
     lua_newtable(L);
     for (; v->name != NULL; v++)
     {
-        lua_pushinteger(L, (lua_Integer) v->value);
+        lua_pushinteger(L, v->value);
         lua_setfield(L, -2, v->name);
     }
     lua_setfield(L, -2, name);

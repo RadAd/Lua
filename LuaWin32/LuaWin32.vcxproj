@@ -172,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Buffer.c" />
+    <ClCompile Include="LuaAdvApi32.c" />
     <ClCompile Include="LuaGdi32.c" />
     <ClCompile Include="LuaKernel32.c" />
     <ClCompile Include="LuaUser32.c" />

@@ -245,9 +245,20 @@ static const struct lua_RegInt file_attribute[] = {
   { NULL, 0 },
 };
 
+static const struct lua_RegInt hkey[] = {
+  { "CLASSES_ROOT",         (lua_Integer) HKEY_CLASSES_ROOT },
+  { "CURRENT_USER",         (lua_Integer) HKEY_CURRENT_USER },
+  { "LOCAL_MACHINE",        (lua_Integer) HKEY_LOCAL_MACHINE },
+  { "CURRENT_CONFIG",       (lua_Integer) HKEY_CURRENT_CONFIG },
+  { "USERS",                (lua_Integer) HKEY_USERS },
+
+  { NULL, 0 },
+};
+
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
 extern const struct luaL_Reg gdi32lib[];
+extern const struct luaL_Reg advapi32lib[];
 
 WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
 {
@@ -258,6 +269,7 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     luaL_setfuncs(L, kernel32lib, 0);
     luaL_setfuncs(L, user32lib, 0);
     luaL_setfuncs(L, gdi32lib, 0);
+    luaL_setfuncs(L, advapi32lib, 0);
     lua_pushvalue(L, -1);
     set_info(L);
     rlua_newtableinteger(L, class_styles, "class_styles");
@@ -267,5 +279,10 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, color_index, "color_index");
     rlua_newtableinteger(L, get_window_long_types, "GWLP");
     rlua_newtableinteger(L, file_attribute, "FILE_ATTRIBUTE");
+    rlua_newtableinteger(L, hkey, "HKEY");
+
+    lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
+    lua_setfield(L, -2, "INVALID_HANDLE_VALUE");
+
     return 1;
 }
