@@ -4,11 +4,14 @@ prompt $G$S
 
 rem call vcmake x86 release build x64 build
 
+if [%1]==[] (
 call :pack Win32 || exit /b 1
 call :pack x64 || exit /b 1
+) else call :pack %1 || exit /b 1
 goto :eof
 
 :pack
+echo Pack %1
 if exist Lua_%1.zip del Lua_%1.zip
 if exist LuaDev_%1.zip del LuaDev_%1.zip
 rem zip -j Lua_%1.zip Bin\Release%1\Lua.exe Bin\Release%1\Lua.dll Bin\Release%1\lfs.dll Bin\Release%1\lrwin32.dll || exit /b 1
