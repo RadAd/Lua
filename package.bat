@@ -5,9 +5,13 @@ prompt $G$S
 rem call vcmake x86 release build x64 build
 
 if [%1]==[] (
-call :pack Win32 || exit /b 1
-call :pack x64 || exit /b 1
-) else call :pack %1 || exit /b 1
+	call :pack Win32 || exit /b 1
+	call :pack x64 || exit /b 1
+) else if [%1]==[x86] (
+	call :pack Win32 || exit /b 1
+) else (
+	call :pack %1 || exit /b 1
+)
 goto :eof
 
 :pack
