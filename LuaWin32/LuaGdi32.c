@@ -8,11 +8,11 @@
 static int l_TextOut(lua_State* L)
 {
     int arg = 0;
-    HDC hdc = rlua_checkHDC(L, ++arg);
-    int x = rlua_checkint(L, ++arg);
-    int y = rlua_checkint(L, ++arg);
-    const char* str = luaL_checkstring(L, ++arg);
-    int c = rlua_optint(L, ++arg, (int) strlen(str));
+    const HDC hdc = rlua_checkHDC(L, ++arg);
+    const int x = rlua_checkint(L, ++arg);
+    const int y = rlua_checkint(L, ++arg);
+    const char* const str = luaL_checkstring(L, ++arg);
+    const int c = rlua_optint(L, ++arg, (int) strlen(str));
 
     BOOL r = TextOut(hdc, x, y, str, c);
 

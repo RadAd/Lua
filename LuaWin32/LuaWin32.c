@@ -255,10 +255,13 @@ static const struct lua_RegInt hkey[] = {
   { NULL, 0 },
 };
 
+extern const struct luaL_Reg crtlib[];
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
 extern const struct luaL_Reg gdi32lib[];
 extern const struct luaL_Reg advapi32lib[];
+
+extern const struct lua_RegInt fcntl[];
 
 WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
 {
@@ -266,6 +269,7 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
 
     luaL_checkversion(L),
     lua_createtable(L, 0, 100);
+    luaL_setfuncs(L, crtlib, 0);
     luaL_setfuncs(L, kernel32lib, 0);
     luaL_setfuncs(L, user32lib, 0);
     luaL_setfuncs(L, gdi32lib, 0);
@@ -280,6 +284,7 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, get_window_long_types, "GWLP");
     rlua_newtableinteger(L, file_attribute, "FILE_ATTRIBUTE");
     rlua_newtableinteger(L, hkey, "HKEY");
+    rlua_newtableinteger(L, fcntl, "fcntl");
 
     lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
     lua_setfield(L, -2, "INVALID_HANDLE_VALUE");

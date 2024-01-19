@@ -21,7 +21,7 @@ static char* strndup(const char* str, int chars)
 static int l_ExpandEnvironmentStrings(lua_State* L)
 {
     int arg = 0;
-    const char* lpName = rlua_checkstring(L, ++arg);
+    const char* const lpName = rlua_checkstring(L, ++arg);
 
     static CharBuffer cb;
     if (cb.size == 0)
@@ -42,9 +42,9 @@ static int l_ExpandEnvironmentStrings(lua_State* L)
 static int l_FindClose(lua_State* L)
 {
     int arg = 0;
-    HANDLE h = rlua_checkHANDLE(L, ++arg);
+    const HANDLE h = rlua_checkHANDLE(L, ++arg);
 
-    BOOL ret = FindClose(h);
+    const BOOL ret = FindClose(h);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, ret);
@@ -54,12 +54,12 @@ static int l_FindClose(lua_State* L)
 static int l_FindFirstFile(lua_State* L)
 {
     int arg = 0;
-    const char* lpFileName = rlua_checkstring(L, ++arg);
+    const char* const lpFileName = rlua_checkstring(L, ++arg);
     const int FindFileDataidx = ++arg;
 
     WIN32_FIND_DATAA FindFileData;
     ZeroMemory(&FindFileData, sizeof(FindFileData));
-    HANDLE h = FindFirstFile(lpFileName, &FindFileData);
+    const HANDLE h = FindFirstFile(lpFileName, &FindFileData);
 
     rlua_fromWIN32_FIND_DAT(L, FindFileDataidx, &FindFileData);
 
@@ -71,12 +71,12 @@ static int l_FindFirstFile(lua_State* L)
 static int l_FindNextFile(lua_State* L)
 {
     int arg = 0;
-    HANDLE h = rlua_checkHANDLE(L, ++arg);
+    const HANDLE h = rlua_checkHANDLE(L, ++arg);
     const int FindFileDataidx = ++arg;
 
     WIN32_FIND_DATAA FindFileData;
     ZeroMemory(&FindFileData, sizeof(FindFileData));
-    BOOL ret = FindNextFile(h, &FindFileData);
+    const BOOL ret = FindNextFile(h, &FindFileData);
 
     rlua_fromWIN32_FIND_DAT(L, -1, &FindFileData);
 
@@ -88,7 +88,7 @@ static int l_FindNextFile(lua_State* L)
 static int l_GetConsoleAliases(lua_State* L)
 {
     int arg = 0;
-    const char* lpExeName = rlua_checkstring(L, ++arg);
+    const char* const lpExeName = rlua_checkstring(L, ++arg);
 
     const int rt = lua_gettop(L);
 
@@ -119,7 +119,7 @@ static int l_GetConsoleAliases(lua_State* L)
 static int l_GetConsoleAliasesLength(lua_State* L)
 {
     int arg = 0;
-    const char* lpExeName = rlua_checkstring(L, ++arg);
+    const char* const lpExeName = rlua_checkstring(L, ++arg);
 
     const int rt = lua_gettop(L);
 
@@ -156,7 +156,7 @@ static int l_GetEnvironmentStrings(lua_State* L)
 static int l_GetEnvironmentVariable(lua_State* L)
 {
     int arg = 0;
-    const char* lpName = rlua_checkstring(L, ++arg);
+    const char* const lpName = rlua_checkstring(L, ++arg);
 
     static CharBuffer cb;
     if (cb.size == 0)
@@ -204,7 +204,7 @@ static int l_GetLastError(lua_State* L)
 static int l_OutputDebugString(lua_State* L)
 {
     int arg = 0;
-    const char* lpOutputString = rlua_checkstring(L, ++arg);
+    const char* const lpOutputString = rlua_checkstring(L, ++arg);
 
     OutputDebugString(lpOutputString);
 
@@ -214,8 +214,8 @@ static int l_OutputDebugString(lua_State* L)
 static int l_SetEnvironmentVariable(lua_State* L)
 {
     int arg = 0;
-    const char* lpName = rlua_checkstring(L, ++arg);
-    const char* lpValue = rlua_checkstringornil(L, ++arg);
+    const char* const lpName = rlua_checkstring(L, ++arg);
+    const char* const lpValue = rlua_checkstringornil(L, ++arg);
 
     const BOOL ret = SetEnvironmentVariable(lpName, lpValue);
 

@@ -12,6 +12,7 @@
     <ClCompile Include="LuaGdi32.c" />
     <ClCompile Include="Buffer.c" />
     <ClCompile Include="LuaAdvApi32.c" />
+    <ClCompile Include="LuaCrt.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LuaWin32Types.h" />

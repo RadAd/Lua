@@ -9,9 +9,9 @@
 static int l_RegCloseKey(lua_State* L)
 {
     int arg = 0;
-    HKEY hKey = rlua_checkHKEY(L, ++arg);
+    const HKEY hKey = rlua_checkHKEY(L, ++arg);
 
-    LSTATUS s = RegCloseKey(hKey);
+    const LSTATUS s = RegCloseKey(hKey);
 
     const int rt = lua_gettop(L);
     if (s == ERROR_SUCCESS)
@@ -27,8 +27,8 @@ static int l_RegCloseKey(lua_State* L)
 static int l_RegEnumKeyEx(lua_State* L)
 {
     int arg = 0;
-    HKEY hKey = rlua_checkHKEY(L, ++arg);
-    DWORD dwIndex = rlua_checkDWORD(L, ++arg);
+    const HKEY hKey = rlua_checkHKEY(L, ++arg);
+    const DWORD dwIndex = rlua_checkDWORD(L, ++arg);
 
     static CharBuffer cbName;
     if (cbName.size == 0)
@@ -42,7 +42,7 @@ static int l_RegEnumKeyEx(lua_State* L)
     DWORD dwClassSize = cbClass.size;
     FILETIME ftLastWriteTime;
 
-    LSTATUS s = RegEnumKeyEx(hKey, dwIndex, cbName.str, &dwNameSize, NULL, cbClass.str, &dwClassSize, &ftLastWriteTime);
+    const LSTATUS s = RegEnumKeyEx(hKey, dwIndex, cbName.str, &dwNameSize, NULL, cbClass.str, &dwClassSize, &ftLastWriteTime);
 
     const int rt = lua_gettop(L);
     if (s == ERROR_SUCCESS)
@@ -62,11 +62,11 @@ static int l_RegEnumKeyEx(lua_State* L)
 static int l_RegOpenKey(lua_State* L)
 {
     int arg = 0;
-    HKEY hKey = rlua_checkHKEY(L, ++arg);
-    const char* lpSubKey = luaL_checkstring(L, ++arg);
+    const HKEY hKey = rlua_checkHKEY(L, ++arg);
+    const char* const lpSubKey = luaL_checkstring(L, ++arg);
 
     HKEY hKeyResult;
-    LSTATUS s = RegOpenKey(hKey, lpSubKey, &hKeyResult);
+    const LSTATUS s = RegOpenKey(hKey, lpSubKey, &hKeyResult);
 
     const int rt = lua_gettop(L);
     if (s == ERROR_SUCCESS)
