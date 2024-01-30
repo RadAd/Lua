@@ -3,7 +3,9 @@ setlocal ENABLEDELAYEDEXPANSION
 set LUA="%~dp0lua.exe"
 if not exist %LUA% echo Lua.exe not found && exit /b 1
 
-set CMD=%LUA% %%1 %%*
+reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Lua.exe" /ve /f /d %LUA%
+
+set CMD=Lua.exe "%%1" %%*
 
 rem echo --- %CMD%
 set CMD=!CMD:^%%=^%%^%%!
