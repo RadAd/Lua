@@ -30,7 +30,7 @@ inline WndProcSet* find_wnd_proc_set(ATOM class_atom)
 static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     const ATOM class_atom = (ATOM) GetClassLongPtr(hwnd, GCW_ATOM);
-    const WndProcSet* pwnd_proc_set = find_wnd_proc_set(class_atom);
+    const WndProcSet* const pwnd_proc_set = find_wnd_proc_set(class_atom);
 
     lua_State* L = g_L;
     lua_rawgeti(L, LUA_REGISTRYINDEX, pwnd_proc_set->ref);
@@ -50,11 +50,11 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 static int l_BeginPaint(lua_State* L)
 {
     int arg = 0;
-    HWND hwnd = rlua_checkHWND(L, ++arg);
+    const HWND hwnd = rlua_checkHWND(L, ++arg);
 
     PAINTSTRUCT ps;
     ZeroMemory(&ps, sizeof(ps));
-    HDC hdc = BeginPaint(hwnd, &ps);
+    const HDC hdc = BeginPaint(hwnd, &ps);
 
     const int rt = lua_gettop(L);
     lua_newtable(L);
@@ -71,16 +71,16 @@ static int l_CreateWindowEx(lua_State* L)
     g_L = L;
 
     const int o = 1;
-    LPCSTR lpszClassName = rlua_getfieldstring(L, o, "lpszClassName");
-    LPCSTR lpszWindowName = rlua_getfieldstring(L, o, "name");
-    DWORD style = rlua_getfieldDWORD(L, o, "style");
-    DWORD exstyle = rlua_getfieldoptDWORD(L, o, "exstyle", 0);
-    int x = rlua_getfieldoptint(L, o, "x", CW_USEDEFAULT);
-    int y = rlua_getfieldoptint(L, o, "y", CW_USEDEFAULT);
-    int w = rlua_getfieldoptint(L, o, "w", CW_USEDEFAULT);
-    int h = rlua_getfieldoptint(L, o, "h", CW_USEDEFAULT);
+    LPCSTR const lpszClassName = rlua_getfieldstring(L, o, "lpszClassName");
+    LPCSTR const lpszWindowName = rlua_getfieldstring(L, o, "name");
+    const DWORD style = rlua_getfieldDWORD(L, o, "style");
+    const DWORD exstyle = rlua_getfieldoptDWORD(L, o, "exstyle", 0);
+    const int x = rlua_getfieldoptint(L, o, "x", CW_USEDEFAULT);
+    const int y = rlua_getfieldoptint(L, o, "y", CW_USEDEFAULT);
+    const int w = rlua_getfieldoptint(L, o, "w", CW_USEDEFAULT);
+    const int h = rlua_getfieldoptint(L, o, "h", CW_USEDEFAULT);
 
-    HWND hwnd = CreateWindowEx(
+    const HWND hwnd = CreateWindowEx(
         exstyle,
         lpszClassName,
         lpszWindowName,
@@ -101,12 +101,12 @@ static int l_CreateWindowEx(lua_State* L)
 static int l_DefWindowProc(lua_State* L)
 {
     int arg = 0;
-    HWND hwnd = rlua_checkHWND(L, ++arg);
-    UINT uMsg = rlua_checkUINT(L, ++arg);
-    WPARAM wParam = rlua_checkWPARAM(L, ++arg);
-    LPARAM lParam = rlua_checkLPARAM(L, ++arg);
+    const HWND hwnd = rlua_checkHWND(L, ++arg);
+    const UINT uMsg = rlua_checkUINT(L, ++arg);
+    const WPARAM wParam = rlua_checkWPARAM(L, ++arg);
+    const LPARAM lParam = rlua_checkLPARAM(L, ++arg);
 
-    LRESULT r = DefWindowProc(hwnd, uMsg, wParam, lParam);
+    const LRESULT r = DefWindowProc(hwnd, uMsg, wParam, lParam);
 
     const int rt = lua_gettop(L);
     lua_pushinteger(L, r);
@@ -123,7 +123,7 @@ static int l_DispatchMessage(lua_State* L)
     const int idxMSG = ++arg;
     rlua_toMSG(L, idxMSG, &msg);
 
-    LRESULT r = DispatchMessage(&msg);
+    const LRESULT r = DispatchMessage(&msg);
 
     //rlua_fromMSG(L, idxMSG, &msg);
 
@@ -136,7 +136,7 @@ static int l_DispatchMessage(lua_State* L)
 static int l_EndPaint(lua_State* L)
 {
     int arg = 0;
-    HWND hwnd = rlua_checkHWND(L, ++arg);
+    const HWND hwnd = rlua_checkHWND(L, ++arg);
     const int psindex = ++arg;
 
     PAINTSTRUCT ps;
@@ -147,7 +147,7 @@ static int l_EndPaint(lua_State* L)
     ps.fIncUpdate = rlua_getfieldBOOL(L, psindex, "fIncUpdate");
     ps.rcPaint = rlua_getfieldRECT(L, psindex, "rcPaint");
 
-    BOOL r = EndPaint(hwnd, &ps);
+    const BOOL r = EndPaint(hwnd, &ps);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, r);
@@ -156,7 +156,7 @@ static int l_EndPaint(lua_State* L)
 
 static BOOL WINAPI EnumWindowsProc(HWND hWnd, LPARAM lParam)
 {
-    lua_State* L = (lua_State*) lParam;
+    lua_State* const L = (lua_State*) lParam;
     rlua_pushHWND(L, hWnd);
     lua_appendarray(L, -2);
     return TRUE;
@@ -172,11 +172,11 @@ static int l_EnumWindows(lua_State* L)
 static int l_FillRect(lua_State* L)
 {
     int arg = 0;
-    HDC hdc = rlua_checkHDC(L, ++arg);
-    RECT rc = rlua_checkRECT(L, ++arg);
-    HBRUSH hbrush = rlua_checkHBRUSH(L, ++arg);
+    const HDC hdc = rlua_checkHDC(L, ++arg);
+    const RECT rc = rlua_checkRECT(L, ++arg);
+    const HBRUSH hbrush = rlua_checkHBRUSH(L, ++arg);
 
-    int r = FillRect(hdc, &rc, hbrush);
+    const int r = FillRect(hdc, &rc, hbrush);
 
     const int rt = lua_gettop(L);
     rlua_pushint(L, r);
@@ -186,7 +186,7 @@ static int l_FillRect(lua_State* L)
 static int l_GetClassName(lua_State* L)
 {
     int arg = 0;
-    HWND hWnd = rlua_checkHWND(L, ++arg);
+    const HWND hWnd = rlua_checkHWND(L, ++arg);
 
     static CharBuffer cb;
     if (cb.size == 0)
@@ -206,7 +206,7 @@ static int l_GetClassName(lua_State* L)
 
 static int l_GetForegroundWindow(lua_State* L)
 {
-    HWND hwnd = GetForegroundWindow();
+    const HWND hwnd = GetForegroundWindow();
 
     const int rt = lua_gettop(L);
     rlua_pushHWND(L, hwnd);
@@ -226,7 +226,7 @@ static int l_GetMessage(lua_State* L)
 
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
-    BOOL r = GetMessage(&msg, hwnd, wMsgFilterMin, wMsgFilterMax);
+    const BOOL r = GetMessage(&msg, hwnd, wMsgFilterMin, wMsgFilterMax);
     rlua_fromMSG(L, msgidx, &msg);
 
     g_L = NULL;
@@ -238,10 +238,10 @@ static int l_GetMessage(lua_State* L)
 static int l_GetWindowLongPtr(lua_State* L)
 {
     int arg = 0;
-    HWND hWnd = rlua_checkHWND(L, ++arg);
-    int nIndex = rlua_checkint(L, ++arg);
+    const HWND hWnd = rlua_checkHWND(L, ++arg);
+    const int nIndex = rlua_checkint(L, ++arg);
 
-    LONG_PTR lp = GetWindowLongPtr(hWnd, nIndex);
+    const LONG_PTR lp = GetWindowLongPtr(hWnd, nIndex);
 
     const int rt = lua_gettop(L);
     rlua_pushLONG_PTR(L, lp);
@@ -251,7 +251,7 @@ static int l_GetWindowLongPtr(lua_State* L)
 static int l_GetWindowText(lua_State* L)
 {
     int arg = 0;
-    HWND hWnd = rlua_checkHWND(L, ++arg);
+    const HWND hWnd = rlua_checkHWND(L, ++arg);
 
     const int lenb = GetWindowTextLength(hWnd);
     if (lenb == 0)
@@ -283,12 +283,12 @@ static int l_GetWindowText(lua_State* L)
 static int l_MessageBox(lua_State* L)
 {
     int arg = 0;
-    HWND hwnd = rlua_checkHWND(L, ++arg);
-    const char* lpText = rlua_checkstring(L, ++arg);
-    const char* lpCaption = rlua_checkstring(L, ++arg);
-    UINT uType = rlua_checkUINT(L, ++arg);
+    const HWND hwnd = rlua_checkHWND(L, ++arg);
+    const char* const lpText = rlua_checkstring(L, ++arg);
+    const char* const lpCaption = rlua_checkstring(L, ++arg);
+    const UINT uType = rlua_checkUINT(L, ++arg);
 
-    int r = MessageBox(hwnd, lpText, lpCaption, uType);
+    const int r = MessageBox(hwnd, lpText, lpCaption, uType);
 
     const int rt = lua_gettop(L);
     rlua_pushint(L, r);
@@ -297,7 +297,7 @@ static int l_MessageBox(lua_State* L)
 
 static int l_PostQuitMessage(lua_State* L)
 {
-    int nExitCode = rlua_checkint(L, 1);
+    const int nExitCode = rlua_checkint(L, 1);
 
     PostQuitMessage(nExitCode);
 
@@ -348,7 +348,7 @@ static int l_TranslateMessage(lua_State* L)
     rlua_toMSG(L, idxMSG, &msg);
     const int r2 = lua_gettop(L);
 
-    BOOL r = TranslateMessage(&msg);
+    const BOOL r = TranslateMessage(&msg);
 
     const int r3 = lua_gettop(L);
 
