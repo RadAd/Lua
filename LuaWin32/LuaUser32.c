@@ -370,6 +370,21 @@ static int l_RegisterClass(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_SetWindowPos(lua_State* L)
+{
+    int arg = 0;
+    const HWND hWnd = rlua_checkHWND(L, ++arg);
+    const HWND hWndInsertAfter = rlua_checkHWND(L, ++arg);
+    const RECT rc = rlua_checkRECT(L, ++arg);
+    const UINT flags = rlua_checkUINT(L, ++arg);
+
+    const BOOL r = SetWindowPos(hWnd, hWndInsertAfter, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, flags);
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, r);
+    return lua_gettop(L) - rt;
+}
+
 static int l_TranslateMessage(lua_State* L)
 {
     const int r1 = lua_gettop(L);
@@ -410,6 +425,7 @@ const struct luaL_Reg user32lib[] = {
   { "MessageBox", l_MessageBox },
   { "PostQuitMessage", l_PostQuitMessage },
   { "RegisterClass", l_RegisterClass },
+  { "SetWindowPos", l_SetWindowPos },
   { "TranslateMessage", l_TranslateMessage },
 
   { NULL, 0 },

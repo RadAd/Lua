@@ -283,6 +283,36 @@ static const struct lua_RegInt RectType[] = {
   { NULL, 0 },
 };
 
+static const struct lua_RegInt HWNDType[] = {
+  { "BOTTOM",       (lua_Integer) HWND_BOTTOM },
+  { "NOTOPMOST",    (lua_Integer) HWND_NOTOPMOST },
+  { "TOP",          (lua_Integer) HWND_TOP },
+  { "TOPMOST",      (lua_Integer) HWND_TOPMOST },
+
+  { NULL, 0 },
+};
+
+// SetWindowPos flags
+static const struct lua_RegInt SWPType[] = {
+  { "ASYNCWINDOWPOS",   SWP_ASYNCWINDOWPOS },
+  { "DEFERERASE",       SWP_DEFERERASE },
+  { "DRAWFRAME",        SWP_DRAWFRAME },
+  { "FRAMECHANGED",     SWP_FRAMECHANGED },
+  { "HIDEWINDOW",       SWP_HIDEWINDOW },
+  { "NOACTIVATE",       SWP_NOACTIVATE },
+  { "NOCOPYBITS",       SWP_NOCOPYBITS },
+  { "NOMOVE",           SWP_NOMOVE },
+  { "NOOWNERZORDER",    SWP_NOOWNERZORDER },
+  { "NOREDRAW",         SWP_NOREDRAW },
+  { "NOREPOSITION",     SWP_NOREPOSITION },
+  { "NOSENDCHANGING",   SWP_NOSENDCHANGING },
+  { "NOSIZE",           SWP_NOSIZE },
+  { "NOZORDER",         SWP_NOZORDER },
+  { "SHOWWINDOW",       SWP_SHOWWINDOW },
+
+  { NULL, 0 },
+};
+
 extern const struct luaL_Reg crtlib[];
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
@@ -315,6 +345,8 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, fcntl, "fcntl");
     rlua_newtableinteger(L, RegType, "REG");
     rlua_newtableinteger(L, RectType, "RECT");
+    rlua_newtableinteger(L, HWNDType, "HWND");
+    rlua_newtableinteger(L, SWPType, "SWP");
 
     lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
     lua_setfield(L, -2, "INVALID_HANDLE_VALUE");

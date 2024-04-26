@@ -131,7 +131,7 @@ inline type rlua_check##type(lua_State* L, int idx) \
     luaL_checktype(L, idx, LUA_TTABLE); \
     type v; \
     ZeroMemory(&v, sizeof(v)); \
-    rlua_to##type(L, -1, &v); \
+    rlua_to##type(L, idx, &v); \
     return v; \
 } \
 inline void rlua_push##type(lua_State* L, const type v) \
