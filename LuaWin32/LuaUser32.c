@@ -183,6 +183,19 @@ static int l_FillRect(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_FindWindow(lua_State* L)
+{
+    int arg = 0;
+    const char* const lpClassName = rlua_checkstringornil(L, ++arg);
+    const char* const lpWindowName = rlua_checkstringornil(L, ++arg);
+
+    const HWND hWnd = FindWindow(lpClassName, lpWindowName);
+
+    const int rt = lua_gettop(L);
+    rlua_pushHWND(L, hWnd);
+    return lua_gettop(L) - rt;
+}
+
 static int l_GetClassName(lua_State* L)
 {
     int arg = 0;
@@ -245,6 +258,25 @@ static int l_GetWindowLongPtr(lua_State* L)
 
     const int rt = lua_gettop(L);
     rlua_pushLONG_PTR(L, lp);
+    return lua_gettop(L) - rt;
+}
+
+static int l_GetWindowRect(lua_State* L)
+{
+    int arg = 0;
+    const HWND hWnd = rlua_checkHWND(L, ++arg);
+    RECT rc = rlua_checkRECT(L, ++arg);
+    const rect_idx = arg;
+
+    const BOOL r = GetWindowRect(hWnd, &rc);
+
+    if (r)
+    {
+        rlua_fromRECT(L, rect_idx, rc);
+    }
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, r);
     return lua_gettop(L) - rt;
 }
 
@@ -368,10 +400,12 @@ const struct luaL_Reg user32lib[] = {
   { "EndPaint", l_EndPaint },
   { "EnumWindows", l_EnumWindows },
   { "FillRect", l_FillRect },
+  { "FindWindow", l_FindWindow },
   { "GetClassName", l_GetClassName },
   { "GetForegroundWindow", l_GetForegroundWindow },
   { "GetMessage", l_GetMessage },
   { "GetWindowLongPtr", l_GetWindowLongPtr },
+  { "GetWindowRect", l_GetWindowRect },
   { "GetWindowText", l_GetWindowText },
   { "MessageBox", l_MessageBox },
   { "PostQuitMessage", l_PostQuitMessage },

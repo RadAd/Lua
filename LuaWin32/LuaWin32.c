@@ -274,6 +274,15 @@ static const struct lua_RegInt RegType[] = {
   { NULL, 0 },
 };
 
+static const struct lua_RegInt RectType[] = {
+  { "left",     0 },
+  { "top",      0 },
+  { "right",    0 },
+  { "bottom",   0 },
+
+  { NULL, 0 },
+};
+
 extern const struct luaL_Reg crtlib[];
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
@@ -305,6 +314,7 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, hkey, "HKEY");
     rlua_newtableinteger(L, fcntl, "fcntl");
     rlua_newtableinteger(L, RegType, "REG");
+    rlua_newtableinteger(L, RectType, "RECT");
 
     lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
     lua_setfield(L, -2, "INVALID_HANDLE_VALUE");
