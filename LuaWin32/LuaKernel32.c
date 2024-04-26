@@ -137,7 +137,6 @@ static int l_GetEnvironmentStrings(lua_State* L)
     lua_createtable(L, 0, 100);
 
     LPCH env = GetEnvironmentStrings();
-    LPCCH e = env;
     for (LPCCH e = env; *e != '\0'; e += strlen(e) + 1)
     {
         const char* eq = strchr(e, L'=');

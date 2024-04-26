@@ -255,6 +255,25 @@ static const struct lua_RegInt hkey[] = {
   { NULL, 0 },
 };
 
+static const struct lua_RegInt RegType[] = {
+  { "NONE",                         REG_NONE },
+  { "SZ",                           REG_SZ },
+  { "EXPAND_SZ",                    REG_EXPAND_SZ },
+  { "BINARY",                       REG_BINARY },
+  { "DWORD",                        REG_DWORD },
+  { "DWORD_LITTLE_ENDIAN",          REG_DWORD_LITTLE_ENDIAN },
+  { "DWORD_BIG_ENDIAN",             REG_DWORD_BIG_ENDIAN },
+  { "LINK",                         REG_LINK },
+  { "MULTI_SZ",                     REG_MULTI_SZ },
+  { "RESOURCE_LIST",                REG_RESOURCE_LIST },
+  { "FULL_RESOURCE_DESCRIPTOR",     REG_FULL_RESOURCE_DESCRIPTOR },
+  { "RESOURCE_REQUIREMENTS_LIST",   REG_RESOURCE_REQUIREMENTS_LIST },
+  { "QWORD",                        REG_QWORD },
+  { "QWORD_LITTLE_ENDIAN",          REG_QWORD_LITTLE_ENDIAN },
+
+  { NULL, 0 },
+};
+
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
 extern const struct luaL_Reg gdi32lib[];
@@ -280,6 +299,7 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, get_window_long_types, "GWLP");
     rlua_newtableinteger(L, file_attribute, "FILE_ATTRIBUTE");
     rlua_newtableinteger(L, hkey, "HKEY");
+    rlua_newtableinteger(L, RegType, "REG");
 
     lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
     lua_setfield(L, -2, "INVALID_HANDLE_VALUE");
