@@ -223,6 +223,17 @@ static int l_SetEnvironmentVariable(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_Sleep(lua_State* L)
+{
+    int arg = 0;
+    const DWORD dwMilliSeconds = rlua_checkDWORD(L, ++arg);
+
+    Sleep(dwMilliSeconds);
+
+    const int rt = lua_gettop(L);
+    return lua_gettop(L) - rt;
+}
+
 extern const struct luaL_Reg kernel32lib[] = {
   { "ExpandEnvironmentStrings", l_ExpandEnvironmentStrings },
   { "FindClose", l_FindClose },
@@ -236,6 +247,7 @@ extern const struct luaL_Reg kernel32lib[] = {
   { "GetLastError", l_GetLastError },
   { "OutputDebugString", l_OutputDebugString },
   { "SetEnvironmentVariable", l_SetEnvironmentVariable },
+  { "Sleep", l_Sleep },
 
   { NULL, 0 },
 };
