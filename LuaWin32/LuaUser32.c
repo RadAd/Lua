@@ -265,15 +265,14 @@ static int l_GetWindowRect(lua_State* L)
 {
     int arg = 0;
     const HWND hWnd = rlua_checkHWND(L, ++arg);
-    RECT rc = rlua_checkRECT(L, ++arg);
-    const rect_idx = arg;
+    const int rect_idx = ++arg;
+    RECT rc; //rlua_checkRECT(L, rect_idx);
+    ZeroMemory(&rc, sizeof(rc));
 
     const BOOL r = GetWindowRect(hWnd, &rc);
 
     if (r)
-    {
         rlua_fromRECT(L, rect_idx, rc);
-    }
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, r);
