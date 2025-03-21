@@ -28,6 +28,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lua\lua.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="lua.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\lua.ico" />
+    <Image Include="res\luadoc.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
