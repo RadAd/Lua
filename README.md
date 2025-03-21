@@ -1,4 +1,6 @@
-# Lua
+<!-- ![Icon](res/lua.ico) Lua -->
+<img src="res/lua.ico" width=32/> Lua
+
 Lua build for MSVC 32-bit and 64-bit
 
 ![Windows](https://img.shields.io/badge/platform-Windows-blue.svg)
