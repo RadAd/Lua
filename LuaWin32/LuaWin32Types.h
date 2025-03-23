@@ -36,6 +36,7 @@ inline void rlua_setfield##type(lua_State* L, int idx, const char* k, type v) \
 REGISTER_CHECK_INTEGER(int)
 REGISTER_CHECK_INTEGER(UINT)
 REGISTER_CHECK_INTEGER(LONG)
+REGISTER_CHECK_INTEGER(ULONG)
 REGISTER_CHECK_INTEGER(LONG_PTR)
 REGISTER_CHECK_INTEGER(DWORD)
 REGISTER_CHECK_INTEGER(WPARAM)
@@ -134,10 +135,22 @@ inline type rlua_check##type(lua_State* L, int idx) \
     rlua_to##type(L, idx, &v); \
     return v; \
 } \
+inline type* rlua_check##type##ornil(lua_State* L, int idx) \
+{ \
+    if (lua_isnil(L, idx)) \
+        return NULL; \
+    luaL_checktype(L, idx, LUA_TTABLE); \
+    type* v = (type*) malloc(sizeof(type)); \
+    if (!v) \
+        return NULL; \
+    ZeroMemory(v, sizeof(type)); \
+    rlua_to##type(L, idx, v); \
+    return v; \
+} \
 inline void rlua_push##type(lua_State* L, const type v) \
 { \
     lua_newtable(L); \
-    rlua_from##type(L, -1, v); \
+    rlua_from##type(L, -1, &v); \
 } \
 inline type rlua_getfield##type(lua_State* L, int idx, const char* k) \
 { \
@@ -152,60 +165,63 @@ inline void rlua_setfield##type(lua_State* L, int idx, const char* k, const type
     lua_setfield(L, idx > 0 ? idx : idx - 1, k); \
 }
 
+#define REGISTER_SET_FIELD(type, object, field) rlua_setfield##type(L, idx, #field, object->field)
+#define REGISTER_GET_FIELD(type, object, field) object->field = rlua_getfield##type(L, idx, #field);
+
 // RECT
 
-inline void rlua_fromRECT(lua_State* L, int idx, const RECT rc)
+inline void rlua_fromRECT(lua_State* L, int idx, const RECT* rc)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    rlua_setfieldLONG(L, idx, "left", rc.left);
-    rlua_setfieldLONG(L, idx, "top", rc.top);
-    rlua_setfieldLONG(L, idx, "right", rc.right);
-    rlua_setfieldLONG(L, idx, "bottom", rc.bottom);
+    REGISTER_SET_FIELD(LONG, rc, left);
+    REGISTER_SET_FIELD(LONG, rc, top);
+    REGISTER_SET_FIELD(LONG, rc, right);
+    REGISTER_SET_FIELD(LONG, rc, bottom);
 }
 
-inline void rlua_toRECT(lua_State* L, int idx, RECT* prc)
+inline void rlua_toRECT(lua_State* L, int idx, RECT* rc)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    prc->left = rlua_getfieldLONG(L, idx, "left");
-    prc->top = rlua_getfieldLONG(L, idx, "top");
-    prc->right = rlua_getfieldLONG(L, idx, "right");
-    prc->bottom = rlua_getfieldLONG(L, idx, "bottom");
+    REGISTER_GET_FIELD(LONG, rc, left);
+    REGISTER_GET_FIELD(LONG, rc, top);
+    REGISTER_GET_FIELD(LONG, rc, right);
+    REGISTER_GET_FIELD(LONG, rc, bottom);
 }
 
 REGISTER_CHECK_STRUCT(RECT)
 
 // POINT
 
-inline void rlua_fromPOINT(lua_State* L, int idx, const POINT pt)
+inline void rlua_fromPOINT(lua_State* L, int idx, const POINT* pt)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    rlua_setfieldLONG(L, idx, "x", pt.x);
-    rlua_setfieldLONG(L, idx, "y", pt.y);
+    REGISTER_SET_FIELD(LONG, pt, x);
+    REGISTER_SET_FIELD(LONG, pt, y);
 }
 
 static void rlua_toPOINT(lua_State* L, int idx, POINT* pt)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    pt->x = rlua_getfieldLONG(L, idx, "x");
-    pt->y = rlua_getfieldLONG(L, idx, "y");
+    REGISTER_GET_FIELD(LONG, pt, x);
+    REGISTER_GET_FIELD(LONG, pt, y);
 }
 
 REGISTER_CHECK_STRUCT(POINT)
 
 // FILETIME
 
-inline void rlua_fromFILETIME(lua_State* L, int idx, const FILETIME ft)
+inline void rlua_fromFILETIME(lua_State* L, int idx, const FILETIME* ft)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    rlua_setfieldLONG(L, idx, "dwLowDateTime", ft.dwLowDateTime);
-    rlua_setfieldLONG(L, idx, "dwHighDateTime", ft.dwHighDateTime);
+    REGISTER_SET_FIELD(LONG, ft, dwLowDateTime);
+    REGISTER_SET_FIELD(LONG, ft, dwHighDateTime);
 }
 
 static void rlua_toFILETIME(lua_State* L, int idx, FILETIME* ft)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    ft->dwLowDateTime = rlua_getfieldLONG(L, idx, "dwLowDateTime");
-    ft->dwHighDateTime = rlua_getfieldLONG(L, idx, "dwHighDateTime");
+    REGISTER_GET_FIELD(LONG, ft, dwLowDateTime);
+    REGISTER_GET_FIELD(LONG, ft, dwHighDateTime);
 }
 
 REGISTER_CHECK_STRUCT(FILETIME)
@@ -215,38 +231,82 @@ REGISTER_CHECK_STRUCT(FILETIME)
 inline void rlua_fromMSG(lua_State* L, int idx, const MSG* m)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    rlua_setfieldHWND(L, idx, "hwnd", m->hwnd);
-    rlua_setfieldUINT(L, idx, "message", m->message);
-    rlua_setfieldWPARAM(L, idx, "wParam", m->wParam);
-    rlua_setfieldLPARAM(L, idx, "lParam", m->lParam);
-    rlua_setfieldDWORD(L, idx, "time", m->time);
-    rlua_setfieldPOINT(L, idx, "pt", m->pt);
+    REGISTER_SET_FIELD(HWND, m, hwnd);
+    REGISTER_SET_FIELD(UINT, m, message);
+    REGISTER_SET_FIELD(WPARAM, m, wParam);
+    REGISTER_SET_FIELD(LPARAM, m, lParam);
+    REGISTER_SET_FIELD(DWORD, m, time);
+    REGISTER_SET_FIELD(POINT, m, pt);
 }
 
 inline void rlua_toMSG(lua_State* L, int idx, MSG* m)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    m->hwnd = rlua_getfieldHWND(L, idx, "hwnd");
-    m->message = rlua_getfieldUINT(L, idx, "message");
-    m->wParam = rlua_getfieldWPARAM(L, idx, "wParam");
-    m->lParam = rlua_getfieldLPARAM(L, idx, "lParam");
-    m->time = rlua_getfieldDWORD(L, idx, "time");
-    m->pt = rlua_getfieldPOINT(L, idx, "pt");
+    REGISTER_GET_FIELD(HWND, m, hwnd);
+    REGISTER_GET_FIELD(UINT, m, message);
+    REGISTER_GET_FIELD(WPARAM, m, wParam);
+    REGISTER_GET_FIELD(LPARAM, m, lParam);
+    REGISTER_GET_FIELD(DWORD, m, time);
+    REGISTER_GET_FIELD(POINT, m, pt);
 }
+
+REGISTER_CHECK_STRUCT(MSG)
 
 // WIN32_FIND_DATA
 
-inline void rlua_fromWIN32_FIND_DAT(lua_State* L, int idx, const WIN32_FIND_DATA* FindFileData)
+inline void rlua_fromWIN32_FIND_DATA(lua_State* L, int idx, const WIN32_FIND_DATA* FindFileData)
 {
     luaL_checktype(L, idx, LUA_TTABLE);
-    rlua_setfieldDWORD(L, idx, "dwFileAttributes", FindFileData->dwFileAttributes);
-    rlua_setfieldFILETIME(L, idx, "ftCreationTime", FindFileData->ftCreationTime);
-    rlua_setfieldFILETIME(L, idx, "ftLastAccessTime", FindFileData->ftLastAccessTime);
-    rlua_setfieldFILETIME(L, idx, "ftCreationTime", FindFileData->ftLastWriteTime);
-    rlua_setfieldDWORD(L, idx, "nFileSizeHigh", FindFileData->nFileSizeHigh);
-    rlua_setfieldDWORD(L, idx, "nFileSizeLow", FindFileData->nFileSizeLow);
-    rlua_setfieldDWORD(L, idx, "dwReserved0", FindFileData->dwReserved0);
-    rlua_setfieldDWORD(L, idx, "dwReserved1", FindFileData->dwReserved1);
-    rlua_setfieldstring(L, idx, "cFileName", FindFileData->cFileName);
-    rlua_setfieldstring(L, idx, "cAlternateFileName", FindFileData->cAlternateFileName);
+    REGISTER_SET_FIELD(DWORD, FindFileData, dwFileAttributes);
+    REGISTER_SET_FIELD(FILETIME, FindFileData, ftCreationTime);
+    REGISTER_SET_FIELD(FILETIME, FindFileData, ftLastAccessTime);
+    REGISTER_SET_FIELD(FILETIME, FindFileData, ftLastWriteTime);
+    REGISTER_SET_FIELD(DWORD, FindFileData, nFileSizeHigh);
+    REGISTER_SET_FIELD(DWORD, FindFileData, nFileSizeLow);
+    REGISTER_SET_FIELD(DWORD, FindFileData, dwReserved0);
+    REGISTER_SET_FIELD(DWORD, FindFileData, dwReserved1);
+    REGISTER_SET_FIELD(string, FindFileData, cFileName);
+    REGISTER_SET_FIELD(string, FindFileData, cAlternateFileName);
 }
+
+//REGISTER_CHECK_STRUCT(WIN32_FIND_DATA)
+
+// SECURITY_ATTRIBUTES
+
+inline void rlua_fromSECURITY_ATTRIBUTES(lua_State* L, int idx, const SECURITY_ATTRIBUTES* lpSecurityAttributes)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    //REGISTER_SET_FIELD(XXX, lpSecurityAttributes, lpSecurityDescriptor);
+    REGISTER_SET_FIELD(BOOL, lpSecurityAttributes, bInheritHandle);
+}
+
+
+inline void rlua_toSECURITY_ATTRIBUTES(lua_State* L, int idx, SECURITY_ATTRIBUTES* lpSecurityAttributes)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    //REGISTER_GET_FIELD(XXX, lpSecurityAttributes, lpSecurityDescriptor);
+    REGISTER_GET_FIELD(BOOL, lpSecurityAttributes, bInheritHandle);
+}
+
+REGISTER_CHECK_STRUCT(SECURITY_ATTRIBUTES)
+
+// CONSOLE_READCONSOLE_CONTROL
+
+inline void rlua_fromCONSOLE_READCONSOLE_CONTROL(lua_State* L, int idx, const CONSOLE_READCONSOLE_CONTROL* pInputControl)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    REGISTER_SET_FIELD(ULONG, pInputControl, nInitialChars);
+    REGISTER_SET_FIELD(DWORD, pInputControl, dwCtrlWakeupMask);
+    REGISTER_SET_FIELD(DWORD, pInputControl, dwControlKeyState);
+}
+
+
+inline void rlua_toCONSOLE_READCONSOLE_CONTROL(lua_State* L, int idx, CONSOLE_READCONSOLE_CONTROL* pInputControl)
+{
+    luaL_checktype(L, idx, LUA_TTABLE);
+    REGISTER_GET_FIELD(ULONG, pInputControl, nInitialChars);
+    REGISTER_GET_FIELD(DWORD, pInputControl, dwCtrlWakeupMask);
+    REGISTER_SET_FIELD(DWORD, pInputControl, dwControlKeyState);
+}
+
+REGISTER_CHECK_STRUCT(CONSOLE_READCONSOLE_CONTROL)
