@@ -1,5 +1,6 @@
 #include "lua.h"
 #include "lauxlib.h"
+#include "llimits.h"
 
 #include <Windows.h>
 #include <io.h>

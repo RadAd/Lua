@@ -15,8 +15,8 @@ int MyReadFile(char* buf, int len)
 }
 
 #define lua_initreadline(L)  ((void)L)
-#define lua_readline(L,b,p) \
-        ((void)L, fputs(p, stdout), fflush(stdout),  /* show prompt */ \
-        MyReadFile(b, LUA_MAXINPUT))  /* get line */
-#define lua_saveline(L,line)	{ (void)L; (void)line; }
-#define lua_freeline(L,b)	{ (void)L; (void)b; }
+#define lua_readline(b,p) \
+        ((void) fputs(p, stdout), fflush(stdout),  /* show prompt */ \
+        MyReadFile(b, LUA_MAXINPUT), b)  /* get line */
+#define lua_saveline(line)	{ (void)line; }
+#define lua_freeline(b)	{ (void)b; }
