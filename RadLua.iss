@@ -9,7 +9,7 @@ AppVersion={#MyAppVersion}
 WizardStyle=modern
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputBaseFilename={#MyAppName}Setup
+OutputBaseFilename={#MyAppName}Setup.{#Platform}
 AppModifyPath="{app}\{#MyAppName}Setup.exe" /modify=1
 SetupIconFile=res\lua.ico
 UninstallDisplayIcon={app}\{#MyAppName}Setup.exe
@@ -25,9 +25,10 @@ Name: envPath; Description: "Add to PATH variable"
 Name: envPathExt; Description: "Add to PATHEXT variable" 
 
 [Files]
-Source: "Bin\Releasex64\Lua.exe"; DestDir: "{app}\bin"
-Source: "Bin\Releasex64\Lua.dll"; DestDir: "{app}\bin"
-Source: "Bin\Releasex64\lfs.dll"; DestDir: "{app}\share"
+Source: "Bin\Release{#Platform}\Lua.exe"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\Lua.dll"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\lfs.dll"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\lrwin32.dll"; DestDir: "{app}\bin"
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: ""; Flags: uninsdeletevalue;
