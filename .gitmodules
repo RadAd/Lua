@@ -1,6 +1,8 @@
 [submodule "lua"]
 	path = lua
 	url = https://github.com/lua/lua.git
+	tag = v5.4.7
 [submodule "luafilesystem"]
 	path = luafilesystem
 	url = https://github.com/keplerproject/luafilesystem.git
+	tag = v1_8_0
