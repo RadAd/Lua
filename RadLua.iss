@@ -1,5 +1,5 @@
 #define MyAppName "RadLua"
-#define MyAppVersion "1.0"
+#define MyAppVersion "v5.4.7"
 #define MyAppPublisher "RadSoft"
 #define MyAppExt ".lua"
 
