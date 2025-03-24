@@ -24,10 +24,10 @@ static int l_CreateFile(lua_State* L)
     const char* const lpFileName = rlua_checkstring(L, ++arg);
     const DWORD dwDesiredAccess = rlua_checkDWORD(L, ++arg);
     const DWORD dwShareMode = rlua_checkDWORD(L, ++arg);
-    SECURITY_ATTRIBUTES* lpSecurityAttributes = rlua_checkSECURITY_ATTRIBUTESornil(L, ++arg);
+    SECURITY_ATTRIBUTES* lpSecurityAttributes = rlua_optSECURITY_ATTRIBUTES(L, ++arg);
     const DWORD dwCreationDisposition = rlua_checkDWORD(L, ++arg);
-    const DWORD dwFlagsAndAttributes = rlua_checkDWORD(L, ++arg);
-    const HANDLE hTemplateFile = rlua_checkHANDLE(L, ++arg);
+    const DWORD dwFlagsAndAttributes = rlua_optDWORD(L, ++arg, FILE_ATTRIBUTE_NORMAL);
+    const HANDLE hTemplateFile = rlua_optHANDLE(L, ++arg, NULL);
 
     if (lpSecurityAttributes)
         lpSecurityAttributes->nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -259,15 +259,15 @@ static int l_OutputDebugString(lua_State* L)
 
     return 0;
 }
-
+    
 static int l_ReadConsole(lua_State* L)
 {
     int arg = 0;
     const HANDLE hFile = rlua_checkHANDLE(L, ++arg);
     const DWORD nNumberOfCharsToRead = rlua_checkDWORD(L, ++arg);
-    const char* const lpInputString = rlua_checkstring(L, ++arg);
+    const char* const lpInputString = rlua_optstring(L, ++arg, NULL);
     DWORD NumberOfCharsRead = 0;
-    const PCONSOLE_READCONSOLE_CONTROL pInputControl = rlua_checkCONSOLE_READCONSOLE_CONTROLornil(L, ++arg);
+    const PCONSOLE_READCONSOLE_CONTROL pInputControl = rlua_optCONSOLE_READCONSOLE_CONTROL(L, ++arg);
 
     static CharBuffer cb;
     if (cb.size == 0)
@@ -330,7 +330,7 @@ static int l_SetEnvironmentVariable(lua_State* L)
 {
     int arg = 0;
     const char* const lpName = rlua_checkstring(L, ++arg);
-    const char* const lpValue = rlua_checkstringornil(L, ++arg);
+    const char* const lpValue = rlua_optstring(L, ++arg, NULL);
 
     const BOOL ret = SetEnvironmentVariable(lpName, lpValue);
 

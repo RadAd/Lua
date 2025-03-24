@@ -57,10 +57,6 @@ inline const char* rlua_checkstring(lua_State* L, int idx)
 {
     return luaL_checkstring(L, idx);
 }
-inline const char* rlua_checkstringornil(lua_State* L, int idx)
-{
-    return lua_isnil(L, idx) ? NULL : luaL_checkstring(L, idx);
-}
 inline const char* rlua_optstring(lua_State* L, int idx, const char* def)
 {
     return luaL_optstring(L, idx, def);
@@ -135,9 +131,9 @@ inline type rlua_check##type(lua_State* L, int idx) \
     rlua_to##type(L, idx, &v); \
     return v; \
 } \
-inline type* rlua_check##type##ornil(lua_State* L, int idx) \
+inline type* rlua_opt##type##(lua_State* L, int idx) \
 { \
-    if (lua_isnil(L, idx)) \
+    if (lua_isnoneornil(L, idx)) \
         return NULL; \
     luaL_checktype(L, idx, LUA_TTABLE); \
     type* v = (type*) malloc(sizeof(type)); \

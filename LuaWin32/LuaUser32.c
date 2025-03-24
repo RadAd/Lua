@@ -187,8 +187,8 @@ static int l_FillRect(lua_State* L)
 static int l_FindWindow(lua_State* L)
 {
     int arg = 0;
-    const char* const lpClassName = rlua_checkstringornil(L, ++arg);
-    const char* const lpWindowName = rlua_checkstringornil(L, ++arg);
+    const char* const lpClassName = rlua_optstring(L, ++arg, NULL);
+    const char* const lpWindowName = rlua_optstring(L, ++arg, NULL);
 
     const HWND hWnd = FindWindow(lpClassName, lpWindowName);
 
