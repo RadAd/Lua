@@ -139,7 +139,7 @@ static int l_GetConsoleAliases(lua_State* L)
     else
     {
         lua_createtable(L, 0, 100);
-        for (const char* a = cb.str; a - cb.str < cb.size; a += strlen(a) + 1)
+        for (const char* a = cb.str; (DWORD)(a - cb.str) < cb.size; a += strlen(a) + 1)
         {
             const char* eq = strchr(a, L'=');
             if (eq != a)
