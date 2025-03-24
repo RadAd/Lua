@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lua\lua.h" />
+    <ClInclude Include="lua_readline.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
