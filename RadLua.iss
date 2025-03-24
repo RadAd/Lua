@@ -6,13 +6,13 @@
 [Setup]
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+AppVerName={#MyAppName} {#MyAppVersion}
 WizardStyle=modern
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename={#MyAppName}Setup.{#Platform}
-AppModifyPath="{app}\{#MyAppName}Setup.exe" /modify=1
 SetupIconFile=res\lua.ico
-UninstallDisplayIcon={app}\{#MyAppName}Setup.exe
+UninstallDisplayIcon={app}\bin\Lua.exe
 ArchitecturesInstallIn64BitMode=win64
 Compression=lzma2
 SolidCompression=yes
