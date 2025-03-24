@@ -313,6 +313,84 @@ static const struct lua_RegInt SWPType[] = {
   { NULL, 0 },
 };
 
+static const struct lua_RegInt STDType[] = {
+  { "INPUT_HANDLE",     STD_INPUT_HANDLE },
+  { "OUTPUT_HANDLE",    STD_OUTPUT_HANDLE },
+  { "ERROR_HANDLE",     STD_ERROR_HANDLE },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt AccessType[] = {
+    // TODO DELETE..MAXIMUM_ALLOWED
+  { "GENERIC_READ",     GENERIC_READ },
+  { "GENERIC_WRITE",    GENERIC_WRITE },
+  { "GENERIC_EXECUTE",  GENERIC_EXECUTE },
+  { "GENERIC_ALL",      GENERIC_ALL },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt ShareType[] = {
+  { "READ",         FILE_SHARE_READ },
+  { "WRITE",        FILE_SHARE_WRITE },
+  { "DELETE",       FILE_SHARE_DELETE },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt CreationType[] = {
+  { "CREATE_NEW",           CREATE_NEW },
+  { "CREATE_ALWAYS",        CREATE_ALWAYS },
+  { "OPEN_EXISTING",        OPEN_EXISTING },
+  { "OPEN_ALWAYS",          OPEN_ALWAYS },
+  { "TRUNCATE_EXISTING",    TRUNCATE_EXISTING },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt FileAttributeType[] = {
+  { "READONLY",                 FILE_ATTRIBUTE_READONLY },
+  { "HIDDEN",                   FILE_ATTRIBUTE_HIDDEN },
+  { "SYSTEM",                   FILE_ATTRIBUTE_SYSTEM },
+  { "DIRECTORY",                FILE_ATTRIBUTE_DIRECTORY },
+  { "ARCHIVE",                  FILE_ATTRIBUTE_ARCHIVE },
+  { "DEVICE",                   FILE_ATTRIBUTE_DEVICE },
+  { "NORMAL",                   FILE_ATTRIBUTE_NORMAL },
+  { "TEMPORARY",                FILE_ATTRIBUTE_TEMPORARY },
+  { "SPARSE_FILE",              FILE_ATTRIBUTE_SPARSE_FILE },
+  { "REPARSE_POINT",            FILE_ATTRIBUTE_REPARSE_POINT },
+  { "COMPRESSED",               FILE_ATTRIBUTE_COMPRESSED },
+  { "OFFLINE",                  FILE_ATTRIBUTE_OFFLINE },
+  { "NOT_CONTENT_INDEXED",      FILE_ATTRIBUTE_NOT_CONTENT_INDEXED },
+  { "ENCRYPTED",                FILE_ATTRIBUTE_ENCRYPTED },
+  { "INTEGRITY_STREAM",         FILE_ATTRIBUTE_INTEGRITY_STREAM },
+  { "VIRTUAL",                  FILE_ATTRIBUTE_VIRTUAL },
+  { "NO_SCRUB_DATA",            FILE_ATTRIBUTE_NO_SCRUB_DATA },
+  { "EA",                       FILE_ATTRIBUTE_EA },
+  { "PINNED",                   FILE_ATTRIBUTE_PINNED },
+  { "UNPINNED",                 FILE_ATTRIBUTE_UNPINNED },
+  { "RECALL_ON_OPEN",           FILE_ATTRIBUTE_RECALL_ON_OPEN },
+  { "RECALL_ON_DATA_ACCESS",    FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS },
+  { "STRICTLY_SEQUENTIAL",      FILE_ATTRIBUTE_STRICTLY_SEQUENTIAL },
+
+  { NULL, 0 },
+};
+
+static const struct lua_RegInt ControlKeyStateType[] = {
+  { "RIGHT_ALT_PRESSED",    RIGHT_ALT_PRESSED  },
+  { "LEFT_ALT_PRESSED",     LEFT_ALT_PRESSED },
+  { "RIGHT_CTRL_PRESSED",   RIGHT_CTRL_PRESSED },
+  { "LEFT_CTRL_PRESSED",    LEFT_CTRL_PRESSED },
+  { "SHIFT_PRESSED",        SHIFT_PRESSED },
+  { "NUMLOCK_ON",           NUMLOCK_ON },
+  { "SCROLLLOCK_ON",        SCROLLLOCK_ON },
+  { "CAPSLOCK_ON",          CAPSLOCK_ON },
+  { "ENHANCED_KEY",         ENHANCED_KEY },
+
+  { NULL, 0 },
+};
+
 extern const struct luaL_Reg crtlib[];
 extern const struct luaL_Reg kernel32lib[];
 extern const struct luaL_Reg user32lib[];
@@ -347,9 +425,17 @@ WIN32_EXPORT int luaopen_lrwin32(lua_State* L)
     rlua_newtableinteger(L, RectType, "RECT");
     rlua_newtableinteger(L, HWNDType, "HWND");
     rlua_newtableinteger(L, SWPType, "SWP");
+    rlua_newtableinteger(L, STDType, "STD");
+    rlua_newtableinteger(L, AccessType, "Access");
+    rlua_newtableinteger(L, ShareType, "FileShare");
+    rlua_newtableinteger(L, CreationType, "Creation");
+    rlua_newtableinteger(L, FileAttributeType, "FileAttribute");
+    rlua_newtableinteger(L, ControlKeyStateType, "ControlKeyState");
 
     lua_pushinteger(L, (lua_Integer) INVALID_HANDLE_VALUE);
     lua_setfield(L, -2, "INVALID_HANDLE_VALUE");
+    lua_pushinteger(L, (lua_Integer) NULL);
+    lua_setfield(L, -2, "NULL");
 
     return 1;
 }

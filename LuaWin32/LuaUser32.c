@@ -118,6 +118,7 @@ static int l_DispatchMessage(lua_State* L)
     g_L = L;
 
     int arg = 0;
+    // TODO Use MSG msg = rlua_checkMSG(L, ++arg);
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     const int idxMSG = ++arg;
@@ -237,6 +238,7 @@ static int l_GetMessage(lua_State* L)
     const UINT wMsgFilterMin = rlua_optUINT(L, ++arg, 0);
     const UINT wMsgFilterMax = rlua_optUINT(L, ++arg, 0);
 
+    // TODO Use MSG msg = rlua_checkMSG(L, ++arg);
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     const BOOL r = GetMessage(&msg, hwnd, wMsgFilterMin, wMsgFilterMax);
@@ -272,7 +274,7 @@ static int l_GetWindowRect(lua_State* L)
     const BOOL r = GetWindowRect(hWnd, &rc);
 
     if (r)
-        rlua_fromRECT(L, rect_idx, rc);
+        rlua_fromRECT(L, rect_idx, &rc);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, r);
@@ -388,6 +390,7 @@ static int l_TranslateMessage(lua_State* L)
 {
     const int r1 = lua_gettop(L);
     int arg = 0;
+    // TODO Use MSG msg = rlua_checkMSG(L, ++arg);
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     const int idxMSG = ++arg;

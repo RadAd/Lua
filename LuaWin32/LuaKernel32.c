@@ -18,6 +18,41 @@ static char* strndup(const char* str, int chars)
 #include "LuaUtils.h"
 #include "LuaWin32Types.h"
 
+static int l_CreateFile(lua_State* L)
+{
+    int arg = 0;
+    const char* const lpFileName = rlua_checkstring(L, ++arg);
+    const DWORD dwDesiredAccess = rlua_checkDWORD(L, ++arg);
+    const DWORD dwShareMode = rlua_checkDWORD(L, ++arg);
+    SECURITY_ATTRIBUTES* lpSecurityAttributes = rlua_checkSECURITY_ATTRIBUTESornil(L, ++arg);
+    const DWORD dwCreationDisposition = rlua_checkDWORD(L, ++arg);
+    const DWORD dwFlagsAndAttributes = rlua_checkDWORD(L, ++arg);
+    const HANDLE hTemplateFile = rlua_checkHANDLE(L, ++arg);
+
+    if (lpSecurityAttributes)
+        lpSecurityAttributes->nLength = sizeof(SECURITY_ATTRIBUTES);
+
+    const HANDLE h = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+
+    free(lpSecurityAttributes);
+
+    const int rt = lua_gettop(L);
+    rlua_pushHANDLE(L, h);
+    return lua_gettop(L) - rt;
+}
+
+static int l_CloseHandle(lua_State* L)
+{
+    int arg = 0;
+    const HANDLE h = rlua_checkHANDLE(L, ++arg);
+
+    const BOOL ret = CloseHandle(h);
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, ret);
+    return lua_gettop(L) - rt;
+}
+
 static int l_ExpandEnvironmentStrings(lua_State* L)
 {
     int arg = 0;
@@ -35,7 +70,7 @@ static int l_ExpandEnvironmentStrings(lua_State* L)
     if (len == 0)
         lua_pushnil(L);
     else
-        lua_pushstring(L, cb.str);
+        lua_pushlstring(L, cb.str, len);
     return lua_gettop(L) - rt;
 }
 
@@ -61,7 +96,7 @@ static int l_FindFirstFile(lua_State* L)
     ZeroMemory(&FindFileData, sizeof(FindFileData));
     const HANDLE h = FindFirstFile(lpFileName, &FindFileData);
 
-    rlua_fromWIN32_FIND_DAT(L, FindFileDataidx, &FindFileData);
+    rlua_fromWIN32_FIND_DATA(L, FindFileDataidx, &FindFileData);
 
     const int rt = lua_gettop(L);
     rlua_pushHANDLE(L, h);
@@ -78,7 +113,7 @@ static int l_FindNextFile(lua_State* L)
     ZeroMemory(&FindFileData, sizeof(FindFileData));
     const BOOL ret = FindNextFile(h, &FindFileData);
 
-    rlua_fromWIN32_FIND_DAT(L, -1, &FindFileData);
+    rlua_fromWIN32_FIND_DATA(L, -1, &FindFileData);
 
     const int rt = lua_gettop(L);
     rlua_pushBOOL(L, ret);
@@ -91,10 +126,13 @@ static int l_GetConsoleAliases(lua_State* L)
     const char* const lpExeName = rlua_checkstring(L, ++arg);
 
     const int rt = lua_gettop(L);
+    const DWORD size = GetConsoleAliasesLength((char*) lpExeName) / sizeof(TCHAR);
 
     static CharBuffer cb;
     if (cb.size == 0)
-        cb = CharBufferCreateSize(GetConsoleAliasesLength((char*) lpExeName) / sizeof(TCHAR));
+        cb = CharBufferCreateSize(size);
+    else
+        CharBufferIncreaseSize(L, &cb, size);
 
     if (!GetConsoleAliases(cb.str, cb.size, (char*) lpExeName))
         lua_pushnil(L);
@@ -169,7 +207,7 @@ static int l_GetEnvironmentVariable(lua_State* L)
     if (len == 0)
         lua_pushnil(L);
     else
-        lua_pushstring(L, cb.str);
+        lua_pushlstring(L, cb.str, len);
     return lua_gettop(L) - rt;
 }
 
@@ -187,7 +225,7 @@ static int l_GetCurrentDirectory(lua_State* L)
     if (len == 0)
         lua_pushnil(L);
     else
-        lua_pushstring(L, cb.str);
+        lua_pushlstring(L, cb.str, len);
     return lua_gettop(L) - rt;
 }
 
@@ -200,6 +238,18 @@ static int l_GetLastError(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_GetStdHandle(lua_State* L)
+{
+    int arg = 0;
+    const DWORD n = rlua_checkDWORD(L, ++arg);
+
+    const HANDLE h = GetStdHandle(n);
+
+    const int rt = lua_gettop(L);
+    rlua_pushHANDLE(L, h);
+    return lua_gettop(L) - rt;
+}
+
 static int l_OutputDebugString(lua_State* L)
 {
     int arg = 0;
@@ -208,6 +258,72 @@ static int l_OutputDebugString(lua_State* L)
     OutputDebugString(lpOutputString);
 
     return 0;
+}
+
+static int l_ReadConsole(lua_State* L)
+{
+    int arg = 0;
+    const HANDLE hFile = rlua_checkHANDLE(L, ++arg);
+    const DWORD nNumberOfCharsToRead = rlua_checkDWORD(L, ++arg);
+    const char* const lpInputString = rlua_checkstring(L, ++arg);
+    DWORD NumberOfCharsRead = 0;
+    const PCONSOLE_READCONSOLE_CONTROL pInputControl = rlua_checkCONSOLE_READCONSOLE_CONTROLornil(L, ++arg);
+
+    static CharBuffer cb;
+    if (cb.size == 0)
+        cb = CharBufferCreate();
+    CharBufferIncreaseSize(L, &cb, nNumberOfCharsToRead);
+
+    if (pInputControl)
+        pInputControl->nLength = sizeof(CONSOLE_READCONSOLE_CONTROL);
+
+    BOOL ret = FALSE;
+    if (pInputControl && (pInputControl->nInitialChars == 0 || lpInputString))
+    {
+        WCHAR buffer[1024];
+        MultiByteToWideChar(CP_UTF8, 0, lpInputString, pInputControl->nInitialChars, buffer, ARRAYSIZE(buffer));
+        ret = ReadConsoleW(hFile, buffer, nNumberOfCharsToRead, &NumberOfCharsRead, pInputControl);
+        int bytes = WideCharToMultiByte(CP_UTF8, 0, buffer, NumberOfCharsRead, cb.str, cb.size, NULL, NULL);
+    }
+    else
+    {
+        ret = ReadConsole(hFile, cb.str, nNumberOfCharsToRead, &NumberOfCharsRead, pInputControl);
+    }
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, ret);
+    if (ret)
+        lua_pushlstring(L, cb.str, NumberOfCharsRead);
+    else
+        lua_pushnil(L);
+    rlua_pushDWORD(L, NumberOfCharsRead);
+    return lua_gettop(L) - rt;
+}
+
+static int l_ReadFile(lua_State* L)
+{
+    int arg = 0;
+    const HANDLE hFile = rlua_checkHANDLE(L, ++arg);
+    //const char* lpBuffer = NULL;
+    const DWORD nNumberOfBytesToRead = rlua_checkDWORD(L, ++arg);
+    DWORD NumberOfBytesRead = 0;
+    const LPOVERLAPPED lpOverlapped = NULL;
+
+    static CharBuffer cb;
+    if (cb.size == 0)
+        cb = CharBufferCreate();
+    CharBufferIncreaseSize(L, &cb, nNumberOfBytesToRead);
+
+    const BOOL ret = ReadFile(hFile, cb.str, nNumberOfBytesToRead, &NumberOfBytesRead, lpOverlapped);
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, ret);
+    if (ret)
+        lua_pushlstring(L, cb.str, NumberOfBytesRead);
+    else
+        lua_pushnil(L);
+    rlua_pushDWORD(L, NumberOfBytesRead);
+    return lua_gettop(L) - rt;
 }
 
 static int l_SetEnvironmentVariable(lua_State* L)
@@ -234,7 +350,42 @@ static int l_Sleep(lua_State* L)
     return lua_gettop(L) - rt;
 }
 
+static int l_WriteConsole(lua_State* L)
+{
+    int arg = 0;
+    const HANDLE hFile = rlua_checkHANDLE(L, ++arg);
+    const char* lpBuffer = rlua_checkstring(L, ++arg);
+    const DWORD nNumberOfCharsToWrite = rlua_checkDWORD(L, ++arg);
+    DWORD NumberOfCharsWritten = 0;
+
+    const BOOL ret = WriteConsole(hFile, lpBuffer, nNumberOfCharsToWrite, &NumberOfCharsWritten, NULL);
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, ret);
+    rlua_pushDWORD(L, NumberOfCharsWritten);
+    return lua_gettop(L) - rt;
+}
+
+static int l_WriteFile(lua_State* L)
+{
+    int arg = 0;
+    const HANDLE hFile = rlua_checkHANDLE(L, ++arg);
+    const char* lpBuffer = rlua_checkstring(L, ++arg);
+    const DWORD nNumberOfBytesToWrite = rlua_checkDWORD(L, ++arg);
+    DWORD NumberOfBytesWritten = 0;
+    const LPOVERLAPPED lpOverlapped = NULL;
+
+    const BOOL ret = WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, &NumberOfBytesWritten, lpOverlapped);
+
+    const int rt = lua_gettop(L);
+    rlua_pushBOOL(L, ret);
+    rlua_pushDWORD(L, NumberOfBytesWritten);
+    return lua_gettop(L) - rt;
+}
+
 extern const struct luaL_Reg kernel32lib[] = {
+  { "CreateFile", l_CreateFile },
+  { "CloseHandle", l_CloseHandle },
   { "ExpandEnvironmentStrings", l_ExpandEnvironmentStrings },
   { "FindClose", l_FindClose },
   { "FindFirstFile", l_FindFirstFile },
@@ -245,9 +396,14 @@ extern const struct luaL_Reg kernel32lib[] = {
   { "GetEnvironmentVariable", l_GetEnvironmentVariable },
   { "GetCurrentDirectory", l_GetCurrentDirectory},
   { "GetLastError", l_GetLastError },
+  { "GetStdHandle", l_GetStdHandle },
   { "OutputDebugString", l_OutputDebugString },
+  { "ReadConsole", l_ReadConsole },
+  { "ReadFile", l_ReadFile },
   { "SetEnvironmentVariable", l_SetEnvironmentVariable },
   { "Sleep", l_Sleep },
+  { "WriteConsole", l_WriteConsole },
+  { "WriteFile", l_WriteFile },
 
   { NULL, 0 },
 };
