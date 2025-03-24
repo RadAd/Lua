@@ -17,7 +17,7 @@ UninstallDisplayIcon={app}\bin\Lua.exe
 ArchitecturesInstallIn64BitMode=win64
 Compression=lzma2
 SolidCompression=yes
-ChangesEnvironment=WizardIsTaskSelected('envPath')
+ChangesEnvironment=yes
 ChangesAssociations=yes
 OutputDir=Bin
 
@@ -31,7 +31,11 @@ Source: "Bin\Release{#Platform}\Lua.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lfs.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lrwin32.dll"; DestDir: "{app}\bin"
 
+[Icons]
+Name: "{group}\Lua"; Filename: "{app}\bin\Lua.exe"
+
 [Registry]
+Root: HKA; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\Lua.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\Lua.exe"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: ""; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}"; ValueType: string; ValueName: "PerceivedType"; ValueData: "text"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppName}"; ValueType: string; ValueName: ""; ValueData: "Program {#MyAppName}";  Flags: uninsdeletekey;
@@ -117,9 +121,13 @@ begin
     if CurStep = ssPostInstall then
     begin
         if WizardIsTaskSelected('envPath') then
-            EnvAddPath('Path', ExpandConstant('{app}') +'\bin');
+            EnvAddPath('Path', ExpandConstant('{app}') +'\bin')
+        else
+            EnvRemovePath('Path', ExpandConstant('{app}') +'\bin');
         if WizardIsTaskSelected('envPathExt') then
-            EnvAddPath('PATHEXT', '{#MyAppExt}');
+            EnvAddPath('PATHEXT', '{#MyAppExt}')
+        else
+            EnvRemovePath('PATHEXT', '{#MyAppExt}');
     end;
 end;
 
