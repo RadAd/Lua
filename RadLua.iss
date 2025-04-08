@@ -2,6 +2,7 @@
 #define MyAppVersion "v5.4.7"
 #define MyAppPublisher "RadSoft"
 #define MyAppExt ".lua"
+;#define Platform "x64"
 
 [Setup]
 AppName={#MyAppName}
@@ -16,7 +17,7 @@ UninstallDisplayIcon={app}\bin\Lua.exe
 ArchitecturesInstallIn64BitMode=win64
 Compression=lzma2
 SolidCompression=yes
-ChangesEnvironment=WizardIsTaskSelected('envPath')
+ChangesEnvironment=yes
 ChangesAssociations=yes
 OutputDir=Bin
 
@@ -30,7 +31,11 @@ Source: "Bin\Release{#Platform}\Lua.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lfs.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lrwin32.dll"; DestDir: "{app}\bin"
 
+[Icons]
+Name: "{group}\Lua"; Filename: "{app}\bin\Lua.exe"
+
 [Registry]
+Root: HKA; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\Lua.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\Lua.exe"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: ""; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}"; ValueType: string; ValueName: "PerceivedType"; ValueData: "text"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppName}"; ValueType: string; ValueName: ""; ValueData: "Program {#MyAppName}";  Flags: uninsdeletekey;
@@ -38,17 +43,21 @@ Root: HKA; Subkey: "Software\Classes\{#MyAppName}\DefaultIcon"; ValueType: strin
 Root: HKA; Subkey: "Software\Classes\{#MyAppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\Lua.exe"" ""%1"" %*";
 
 [Code]
-const EnvironmentHKey = HKEY_LOCAL_MACHINE;
-const EnvironmentKey = 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment';
-{ const EnvironmentHKey = HKEY_CURRENT_USER; }
-{ const EnvironmentKey = 'Environment'; }
+
+function GetEnvironmentKey() : string;
+begin
+    if IsAdminInstallMode() then
+        result := 'SYSTEM\CurrentControlSet\Control\Session Manager\Environment'
+    else
+        result := 'Environment';
+end;
 
 procedure EnvAddPath(value: string; instlPath: string);
 var
     Paths: string;
 begin
     { Retrieve current path (use empty string if entry not exists) }
-    if not RegQueryStringValue(EnvironmentHKey, EnvironmentKey, value, Paths) then
+    if not RegQueryStringValue(HKEY_AUTO, GetEnvironmentKey(), value, Paths) then
         Paths := '';
 
     if Paths = '' then
@@ -68,7 +77,7 @@ begin
     end;
 
     { Overwrite (or create if missing) path environment variable }
-    if RegWriteStringValue(EnvironmentHKey, EnvironmentKey, value, Paths)
+    if RegWriteStringValue(HKEY_AUTO, GetEnvironmentKey(), value, Paths)
     then Log(Format('The [%s] added to PATH: [%s]', [instlPath, Paths]))
     else Log(Format('Error while adding the [%s] to PATH: [%s]', [instlPath, Paths]));
 end;
@@ -79,7 +88,7 @@ var
     P, Offset, DelimLen: Integer;
 begin
     { Skip if registry entry not exists }
-    if not RegQueryStringValue(EnvironmentHKey, EnvironmentKey, value, Paths) then
+    if not RegQueryStringValue(HKEY_AUTO, GetEnvironmentKey(), value, Paths) then
         exit;
 
     { Skip if string not found in path }
@@ -102,7 +111,7 @@ begin
     Delete(Paths, P - Offset, Length(instlPath) + DelimLen);
 
     { Overwrite path environment variable }
-    if RegWriteStringValue(EnvironmentHKey, EnvironmentKey, value, Paths)
+    if RegWriteStringValue(HKEY_AUTO, GetEnvironmentKey(), value, Paths)
     then Log(Format('The [%s] removed from PATH: [%s]', [instlPath, Paths]))
     else Log(Format('Error while removing the [%s] from PATH: [%s]', [instlPath, Paths]));
 end;
@@ -112,9 +121,13 @@ begin
     if CurStep = ssPostInstall then
     begin
         if WizardIsTaskSelected('envPath') then
-            EnvAddPath('Path', ExpandConstant('{app}') +'\bin');
+            EnvAddPath('Path', ExpandConstant('{app}') +'\bin')
+        else
+            EnvRemovePath('Path', ExpandConstant('{app}') +'\bin');
         if WizardIsTaskSelected('envPathExt') then
-            EnvAddPath('PATHEXT', '{#MyAppExt}');
+            EnvAddPath('PATHEXT', '{#MyAppExt}')
+        else
+            EnvRemovePath('PATHEXT', '{#MyAppExt}');
     end;
 end;
 
