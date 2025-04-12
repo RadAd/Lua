@@ -1,11 +1,9 @@
 #define MyAppName "RadLua"
-;#define MyAppVersion GetStringFileInfo('Bin\Release{#Platform}\Lua.exe', PRODUCT_VERSION)
-;#define MyAppVersion GetVersionNumbersString('Bin\Release{#Platform}\Lua.exe')
-#define MyAppVersion GetStringFileInfo('Bin\Releasex64\Lua.exe', PRODUCT_VERSION)
-;#define MyAppVersion "5.4.7"
+#define MyAppBinary "Lua.exe"
+#define MyAppVersion GetStringFileInfo('Bin\Release' + Platform + '\' + MyAppBinary, PRODUCT_VERSION)
+#define MyAppVersionShort Copy(StringChange(MyAppVersion, '.', ''), 1, 2)
 #define MyAppPublisher "RadSoft"
 #define MyAppExt ".lua"
-#define MyAppBinary "Lua.exe"
 ;#define Platform "x64"
 
 [Setup]
@@ -35,7 +33,7 @@ Name: envPathExt; Description: "Add to PATHEXT variable"
 
 [Files]
 Source: "Bin\Release{#Platform}\Lua.exe"; DestDir: "{app}\bin"
-Source: "Bin\Release{#Platform}\Lua54.dll"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\Lua{#MyAppVersionShort}.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lfs.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lrwin32.dll"; DestDir: "{app}\bin"
 
