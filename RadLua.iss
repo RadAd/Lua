@@ -1,25 +1,33 @@
 #define MyAppName "RadLua"
-#define MyAppVersion "v5.4.7"
+;#define MyAppVersion GetStringFileInfo('Bin\Release{#Platform}\Lua.exe', PRODUCT_VERSION)
+;#define MyAppVersion GetVersionNumbersString('Bin\Release{#Platform}\Lua.exe')
+#define MyAppVersion GetStringFileInfo('Bin\Releasex64\Lua.exe', PRODUCT_VERSION)
+;#define MyAppVersion "5.4.7"
 #define MyAppPublisher "RadSoft"
 #define MyAppExt ".lua"
+#define MyAppBinary "Lua.exe"
 ;#define Platform "x64"
 
 [Setup]
 AppName={#MyAppName}
+AppId={#MyAppName}{#Platform}
 AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} {#MyAppVersion}
 WizardStyle=modern
 DefaultDirName={autopf}\{#MyAppPublisher}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename={#MyAppName}Setup.{#Platform}
 SetupIconFile=res\lua.ico
-UninstallDisplayIcon={app}\bin\Lua.exe
+UninstallDisplayIcon={app}\bin\{#MyAppBinary}
 ArchitecturesInstallIn64BitMode=win64
 Compression=lzma2
 SolidCompression=yes
 ChangesEnvironment=yes
 ChangesAssociations=yes
 OutputDir=Bin
+DisableWelcomePage=no
+
+[Messages]
+SetupWindowTitle=Setup - {#MyAppName} {#MyAppVersion}
 
 [Tasks]
 Name: envPath; Description: "Add to PATH variable" 
@@ -27,20 +35,21 @@ Name: envPathExt; Description: "Add to PATHEXT variable"
 
 [Files]
 Source: "Bin\Release{#Platform}\Lua.exe"; DestDir: "{app}\bin"
-Source: "Bin\Release{#Platform}\Lua.dll"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\Lua54.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lfs.dll"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\lrwin32.dll"; DestDir: "{app}\bin"
 
 [Icons]
-Name: "{group}\Lua"; Filename: "{app}\bin\Lua.exe"
+Name: "{group}\Lua"; Filename: "{app}\bin\{#MyAppBinary}"
 
 [Registry]
-Root: HKA; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\Lua.exe"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\Lua.exe"; Flags: uninsdeletevalue;
+Root: HKA; Subkey: "Software\Microsoft\Windows\CurrentVersion\App Paths\{#MyAppBinary}"; ValueType: string; ValueName: ""; ValueData: "{app}\bin\{#MyAppBinary}"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppName}"; ValueData: ""; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppExt}"; ValueType: string; ValueName: "PerceivedType"; ValueData: "text"; Flags: uninsdeletevalue;
 Root: HKA; Subkey: "Software\Classes\{#MyAppName}"; ValueType: string; ValueName: ""; ValueData: "Program {#MyAppName}";  Flags: uninsdeletekey;
-Root: HKA; Subkey: "Software\Classes\{#MyAppName}\DefaultIcon"; ValueType: string;  ValueName: ""; ValueData: "{app}\bin\Lua.exe,1";
-Root: HKA; Subkey: "Software\Classes\{#MyAppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\Lua.exe"" ""%1"" %*";
+Root: HKA; Subkey: "Software\Classes\{#MyAppName}\DefaultIcon"; ValueType: string;  ValueName: ""; ValueData: "{app}\bin\{#MyAppBinary},1";
+Root: HKA; Subkey: "Software\Classes\{#MyAppName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#MyAppBinary}"" ""%1"" %*";
+Root: HKA; Subkey: "Software\Classes\Applications\{#MyAppBinary}\SupportedTypes"; ValueType: string; ValueName: "{#MyAppExt}"; ValueData: ""
 
 [Code]
 
