@@ -34,6 +34,11 @@ Name: envPathExt; Description: "Add to PATHEXT variable"
 [Files]
 Source: "Bin\Release{#Platform}\Lua.exe"; DestDir: "{app}\bin"
 Source: "Bin\Release{#Platform}\Lua{#MyAppVersionShort}.dll"; DestDir: "{app}\bin"
+Source: "Bin\Release{#Platform}\Lua{#MyAppVersionShort}.lib"; DestDir: "{app}\bin"
+Source: "lua\lua.h"; DestDir: "{app}\include"
+Source: "lua\luaconf.h"; DestDir: "{app}\include"
+Source: "lua\lualib.h"; DestDir: "{app}\include"
+Source: "lua\lauxlib.h"; DestDir: "{app}\include"
 
 [Icons]
 Name: "{group}\Lua"; Filename: "{app}\bin\{#MyAppBinary}"
