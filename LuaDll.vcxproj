@@ -81,11 +81,11 @@
     <ClInclude Include="lua\lundump.h" />
     <ClInclude Include="lua\lvm.h" />
     <ClInclude Include="lua\lzio.h" />
-    <ClInclude Include="resourcedll.h" />
-    <ClInclude Include="version.h" />
+    <ClInclude Include="res\resourcedll.h" />
+    <ClInclude Include="res\version.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="luadll.rc" />
+    <ResourceCompile Include="res\luadll.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

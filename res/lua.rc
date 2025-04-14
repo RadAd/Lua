@@ -8,7 +8,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include <winres.h>
-#include "lua\lua.h"
+#include "..\lua\lua.h"
 #include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////

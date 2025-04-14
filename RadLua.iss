@@ -1,4 +1,4 @@
-#define Platform "x64"
+;#define Platform "x64"
 #define MyAppName "RadLua"
 #define MyAppBinary "Lua.exe"
 #define MyAppVersion GetStringFileInfo('Bin\Release' + Platform + '\' + MyAppBinary, PRODUCT_VERSION)
