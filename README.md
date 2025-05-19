@@ -9,6 +9,9 @@ Lua build for MSVC 32-bit and 64-bit
 [![commits-since](https://img.shields.io/github/commits-since/RadAd/Lua/latest.svg)](https://github.com/RadAd/Lua/commits/master)
 [![Build](https://img.shields.io/appveyor/ci/RadAd/Lua.svg)](https://ci.appveyor.com/project/RadAd/Lua)
 
+
+![Lua Release](https://img.shields.io/github/v/release/lua/lua?label=Lua%205.4.7)
+
 - Added an icon to Lua.exe
 - Added version information to Lua.exe and Lua.dll
 - lua_readline implemented using ReadConsole
