@@ -10,7 +10,7 @@ Lua build for MSVC 32-bit and 64-bit
 [![Build](https://img.shields.io/appveyor/ci/RadAd/Lua.svg)](https://ci.appveyor.com/project/RadAd/Lua)
 
 ## Dependencies
-+ [Lua 5.4.7](https://github.com/lua/lua) [![Lua Release](https://img.shields.io/github/v/release/lua/lua)](https://github.com/lua/lua/releases)
++ [Lua 5.4.7](https://github.com/lua/lua) [![Lua Release](https://img.shields.io/github/v/release/lua/lua)](https://github.com/lua/lua/releases) [![commits-since](https://img.shields.io/github/commits-since/lua/lua/v5.4.7)](https://github.com/lua/lua/commits/master/)
 
 ## Features
 - Added an icon to Lua.exe
